@@ -2,6 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import useSWR, { SWRConfig } from "swr";
 
+import { Button } from "./components/Button";
+import { VStack } from "./components/VStack";
+import { HStack } from "./components/HStack";
+import { Status } from "./components/Status";
+
 async function fetcher(obj: any) {
     const res = await fetch("http://localhost:8765/brp", {
         method: "POST",
@@ -23,15 +28,37 @@ function Ping() {
         { refreshInterval: 1000, errorRetryInterval: 1000 },
     );
 
-    if (error) return <div>Not Connected</div>;
-    if (isLoading) return <div>Connecting...</div>;
-    return <div>Connected</div>;
+    if (error) return <Status context="error-danger" value="Not Connected" />;
+    if (isLoading) return <Status context="error-danger" value="Connecting" />;
+    return <Status context="success" value="Connected" />;
 }
 
 function App() {
     return (
         <SWRConfig value={{ fetcher }}>
             <Ping />
+            <VStack>
+                {(
+                    [
+                        "primary",
+                        "error-danger",
+                        "warning",
+                        "success",
+                        "light",
+                        "resource",
+                        "asset",
+                        "code",
+                        "none",
+                    ] as const
+                ).map((context) => (
+                    <HStack>
+                        <Button context={context}>{context}</Button>
+                        <Button context={context} disabled>
+                            {context}
+                        </Button>
+                    </HStack>
+                ))}
+            </VStack>
         </SWRConfig>
     );
 }

@@ -1,0 +1,167 @@
+:root {
+    --surface-minus-2: #18181a;
+    --surface-minus-1: #232326;
+    --surface-0: #39393e;
+    --surface-plus-1: #5c5c66;
+    --surface-plus-2: #7c7c87;
+
+    --surface-minus-2-contrast: #fff;
+    --surface-minus-1-contrast: #fff;
+    --surface-0-contrast: #fff;
+    --surface-plus-1-contrast: #fff;
+    --surface-plus-2-contrast: #000;
+
+    --accent-error-danger: #cc3b40;
+    --accent-warning: #f8a34e;
+    --accent-success: #3bb273;
+    --accent-light: #fcd34d;
+    --accent-resource: #10b981;
+    --accent-asset: #a156d6;
+    --accent-code: #ea7c45;
+
+    --accent-primary: #799bbb;
+    --accent-primary-contrast: #fff;
+    --accent-error-danger-contrast: #fff;
+    --accent-warning-contrast: #000;
+    --accent-success-contrast: #000;
+    --accent-light-contrast: #000;
+    --accent-resource-contrast: #000;
+    --accent-asset-contrast: #fff;
+    --accent-code-contrast: #fff;
+
+    --accent: var(--surface-plus-1);
+    --contrast: var(--surface-plus-1-contrast);
+    --text: var(--surface-plus-1-contrast);
+
+    --control-radius: 0.3rem;
+    --control-height: 2rem;
+    --control-padding-x: 0.5rem;
+    --control-gap: 0.5rem;
+
+    --shadow-low: 0 1px 0 rgba(0, 0, 0, 0.2);
+    --shadow-medium: 0 2px 2px rgba(0, 0, 0, 0.2);
+    --shadow-high: 0 4px 4px rgba(0, 0, 0, 0.2);
+
+    font-size: 12px;
+}
+
+* {
+    box-sizing: border-box;
+    min-width: 0; /* Makes flexbox more predictable */
+    font-family: system-ui;
+}
+
+body {
+    margin: 0;
+    background: var(--surface-minus-1);
+    color: var(--surface-minus-1-contrast);
+}
+
+.context\:primary {
+    --accent: var(--accent-primary);
+    --contrast: var(--accent-primary-contrast);
+}
+
+.context\:error-danger {
+    --accent: var(--accent-error-danger);
+    --contrast: var(--accent-error-danger-contrast);
+}
+
+.context\:warning {
+    --accent: var(--accent-warning);
+    --contrast: var(--accent-warning-contrast);
+}
+
+.context\:success {
+    --accent: var(--accent-success);
+    --contrast: var(--accent-success-contrast);
+}
+
+.context\:light {
+    --accent: var(--accent-light);
+    --contrast: var(--accent-light-contrast);
+}
+
+.context\:resource {
+    --accent: var(--accent-resource);
+    --contrast: var(--accent-resource-contrast);
+}
+
+.context\:asset {
+    --accent: var(--accent-asset);
+    --contrast: var(--accent-asset-contrast);
+}
+
+.context\:code {
+    --accent: var(--accent-code);
+    --contrast: var(--accent-code-contrast);
+}
+
+.context\:none {
+    --accent: var(--surface-plus-1);
+    --contrast: var(--surface-plus-1-contrast);
+}
+
+.Button {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    appearance: none;
+    font-size: inherit;
+    border-radius: var(--control-radius);
+    border: none;
+    height: var(--control-height);
+    padding-left: var(--control-padding-x);
+    padding-right: var(--control-padding-x);
+    box-shadow: var(--shadow-low);
+    text-shadow: var(--shadow-low);
+    background-color: var(--accent);
+    color: var(--contrast);
+
+    &:not(:disabled):hover {
+        filter: brightness(1.1);
+    }
+
+    &:not(:disabled):active {
+        filter: brightness(1.3);
+    }
+
+    &:disabled {
+        background-color: color-mix(in srgb, var(--accent) 10%, transparent);
+        color: color-mix(in srgb, var(--accent) 60%, transparent);
+    }
+
+    &:focus {
+        outline: 2px solid color-mix(in srgb, var(--accent) 80%, transparent);
+        outline-offset: 1px;
+    }
+}
+
+.VStack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--control-gap);
+    align-items: stretch;
+}
+
+.HStack {
+    display: flex;
+    flex-direction: row;
+    gap: var(--control-gap);
+    align-items: stretch;
+}
+
+.Status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    height: var(--control-height);
+    gap: var(--control-gap);
+
+    &::before {
+        content: "●";
+        color: var(--accent);
+    }
+}
