@@ -1,0 +1,25 @@
+{
+    "name": "makeshift-web",
+    "version": "1.0.0",
+    "description": "A Makeshift Editor for Bevy (Web-based)",
+    "scripts": {
+        "dev": "bun --watch server.ts",
+        "build": "bun build --entry-point src/index.tsx --outdir public/js/ --target=browser --minify --sourcemap=external",
+        "prettier": "prettier --write ./",
+        "typecheck": "tsc --noEmit"
+    },
+    "author": "",
+    "license": "(MIT OR Apache-2.0)",
+    "dependencies": {
+        "@types/bun": "^1.0.2",
+        "@types/react": "^18.2.48",
+        "@types/react-dom": "^18.2.18",
+        "prettier": "^3.2.4",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "swr": "^2.2.4"
+    },
+    "devDependencies": {
+        "typescript": "^5.3.3"
+    }
+}
