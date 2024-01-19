@@ -6,6 +6,7 @@ import { Button } from "./components/Button";
 import { VStack } from "./components/VStack";
 import { HStack } from "./components/HStack";
 import { Status } from "./components/Status";
+import { EntityTree } from "./EntityTree";
 
 async function fetcher(obj: any) {
     const res = await fetch("http://localhost:8765/brp", {
@@ -37,28 +38,7 @@ function App() {
     return (
         <SWRConfig value={{ fetcher }}>
             <Ping />
-            <VStack>
-                {(
-                    [
-                        "primary",
-                        "error-danger",
-                        "warning",
-                        "success",
-                        "light",
-                        "resource",
-                        "asset",
-                        "code",
-                        "none",
-                    ] as const
-                ).map((context) => (
-                    <HStack>
-                        <Button context={context}>{context}</Button>
-                        <Button context={context} disabled>
-                            {context}
-                        </Button>
-                    </HStack>
-                ))}
-            </VStack>
+            <EntityTree />
         </SWRConfig>
     );
 }
