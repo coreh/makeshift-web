@@ -72,6 +72,10 @@ export function ComponentInspector({
             Icon = Lucide.ArrowBigRightDash;
             label = "Computed";
             break;
+        case "bevy_render::view::visibility::Visibility":
+            Icon = Lucide.Eye;
+            ComponentEditor = VisibilityComponentEditor;
+            break;
         case "bevy_transform::components::transform::Transform":
             Icon = Lucide.Move3D;
             ComponentEditor = TransformComponentEditor;
@@ -265,18 +269,21 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
                     <input
                         id="x"
                         type="number"
+                        step={0.01}
                         value={x}
                         onChange={(e) => handleChange(e, setX)}
                     />
                     <input
                         id="y"
                         type="number"
+                        step={0.01}
                         value={y}
                         onChange={(e) => handleChange(e, setY)}
                     />
                     <input
                         id="z"
                         type="number"
+                        step={0.01}
                         value={z}
                         onChange={(e) => handleChange(e, setZ)}
                     />
@@ -286,18 +293,21 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
                     <input
                         id="sx"
                         type="number"
+                        step={0.01}
                         value={sx}
                         onChange={(e) => handleChange(e, setSX)}
                     />
                     <input
                         id="sy"
                         type="number"
+                        step={0.01}
                         value={sy}
                         onChange={(e) => handleChange(e, setSY)}
                     />
                     <input
                         id="sz"
                         type="number"
+                        step={0.01}
                         value={sz}
                         onChange={(e) => handleChange(e, setSZ)}
                     />
@@ -307,24 +317,28 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
                     <input
                         id="rx"
                         type="number"
+                        step={0.01}
                         value={rx}
                         onChange={(e) => handleChange(e, setRX)}
                     />
                     <input
                         id="ry"
                         type="number"
+                        step={0.01}
                         value={ry}
                         onChange={(e) => handleChange(e, setRY)}
                     />
                     <input
                         id="rz"
                         type="number"
+                        step={0.01}
                         value={rz}
                         onChange={(e) => handleChange(e, setRZ)}
                     />
                     <input
                         id="rw"
                         type="number"
+                        step={0.01}
                         value={rw}
                         onChange={(e) => handleChange(e, setRW)}
                     />
@@ -340,4 +354,25 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
         userInteraction.current = true;
         setter(e.target.value);
     }
+}
+
+function VisibilityComponentEditor(props: ComponentEditorProps) {
+    const globalStore = useGlobalStore();
+    const entity = globalStore.selection.first();
+
+    return (
+        <div className="ComponentEditor">
+            <VStack>
+                <select
+                    onChange={(e) => props.onSave(props.name, e.target.value)}
+                >
+                    <option>Inherit</option>
+                    <hr />
+                    <option>Visible</option>
+                    <option>Hidden</option>
+                </select>
+                <HStack></HStack>
+            </VStack>
+        </div>
+    );
 }

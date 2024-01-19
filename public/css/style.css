@@ -286,6 +286,7 @@ input[type="number"] {
 .EntityIcon,
 .ComponentIcon {
     color: var(--accent);
+    flex-shrink: 0;
 }
 
 svg.lucide {
