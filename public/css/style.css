@@ -29,8 +29,10 @@
     --accent-asset-contrast: #fff;
     --accent-code-contrast: #fff;
 
-    --accent: var(--surface-plus-1);
-    --contrast: var(--surface-plus-1-contrast);
+    /* --accent: var(--surface-plus-1);
+    --contrast: var(--surface-plus-1-contrast); */
+    --accent: var(--accent-primary);
+    --contrast: var(--accent-primary-contrast);
     --text: var(--surface-plus-1-contrast);
 
     --control-radius: 0.3rem;
@@ -99,8 +101,10 @@ body {
 }
 
 .context\:none {
-    --accent: var(--surface-plus-1);
-    --contrast: var(--surface-plus-1-contrast);
+    /* --accent: var(--surface-plus-1);
+    --contrast: var(--surface-plus-1-contrast); */
+    --accent: var(--accent-primary);
+    --contrast: var(--accent-primary-contrast);
 }
 
 .Button {
@@ -186,6 +190,24 @@ body {
         position: relative;
         height: var(--control-height);
         padding-left: calc(var(--control-indent) * 2);
+        padding-right: var(--control-padding-x);
+
+        &.state\:selected {
+            background-color: color-mix(
+                in srgb,
+                var(--accent) 75%,
+                transparent
+            );
+            outline: 1px solid var(--accent);
+            color: var(--accent-contrast);
+            text-shadow: var(--shadow-low);
+
+            .EntityIcon,
+            .Chevron {
+                color: var(--accent-contrast);
+                filter: drop-shadow(var(--shadow-low));
+            }
+        }
     }
     .Content {
         margin-left: var(--control-indent);

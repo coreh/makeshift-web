@@ -9,6 +9,7 @@ import {
 } from "./components/Collapsible";
 import * as Lucide from "lucide-react";
 import { UIContext } from "./components/common";
+import { useGlobalStore } from "./store";
 
 const HAS = [
     "Children",
@@ -69,6 +70,7 @@ function EntityTreeNode({ entity }: EntityTreeNodeProps) {
     const hasBeenOpen = useRef(false);
     const hasBeenHovered = useRef(false);
     const hasBeenFocused = useRef(false);
+    const globalStore = useGlobalStore();
 
     if (isOpen) {
         hasBeenOpen.current = true;
@@ -111,13 +113,21 @@ function EntityTreeNode({ entity }: EntityTreeNodeProps) {
     return (
         <TreeNode open={isOpen} onOpenChange={setIsOpen}>
             <TreeHeading
+                isSelected={globalStore.selection.has(entity.entity)}
+                onClick={(e) => {
+                    globalStore.replaceSelection(entity.entity);
+                }}
                 onPointerOver={() => setIsHovered(true)}
                 onPointerOut={() => setIsHovered(false)}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
             >
                 {entity.has.Children && (
-                    <TreeChevron>
+                    <TreeChevron
+                        onClick={(e) => {
+                            e.stopPropagation();
+                        }}
+                    >
                         {isOpen ? (
                             <Lucide.ChevronDown />
                         ) : (

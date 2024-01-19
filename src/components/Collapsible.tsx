@@ -25,17 +25,22 @@ export function TreeChevron({
 }
 
 interface TreeHeadingProps extends React.HTMLAttributes<HTMLDivElement> {
+    isSelected?: boolean;
     className?: string;
     children: React.ReactNode;
 }
 
 export function TreeHeading({
+    isSelected,
     className,
     children,
     ...props
 }: TreeHeadingProps) {
     return (
-        <div className={cn("Heading", className)} {...props}>
+        <div
+            className={cn("Heading", isSelected && "state:selected", className)}
+            {...props}
+        >
             {children}
         </div>
     );
