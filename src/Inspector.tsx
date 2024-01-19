@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useGlobalStore } from "./store";
 import useSWR from "swr";
 import { Unserializable, deserialize, serialize } from "./utils";
@@ -24,7 +24,7 @@ export function Inspector() {
                   },
               }
             : null,
-        { keepPreviousData: true },
+        { keepPreviousData: true, refreshInterval: 100 },
     );
 
     const components = data?.content?.entity?.components;
@@ -71,6 +71,10 @@ export function ComponentInspector({
         case "bevy_transform::components::global_transform::GlobalTransform":
             Icon = Lucide.ArrowBigRightDash;
             label = "Computed";
+            break;
+        case "bevy_transform::components::transform::Transform":
+            Icon = Lucide.Move3D;
+            ComponentEditor = TransformComponentEditor;
             break;
         default:
             if (component === Unserializable) {
@@ -139,7 +143,7 @@ export function GenericComponentEditor(props: ComponentEditorProps) {
         setText(stringified);
     }, [entity, stringified]);
     return (
-        <div className="GenericComponentEditor">
+        <div className="ComponentEditor">
             <VStack>
                 <textarea
                     value={text}
@@ -167,9 +171,173 @@ export function GenericComponentEditor(props: ComponentEditorProps) {
 
 export function UnserializableComponentEditor(props: ComponentEditorProps) {
     return (
-        <div className="UnserializableComponentEditor context:warning">
+        <div className="ComponentEditor context:warning">
             <Lucide.PlugZap />
             Unserializable
         </div>
     );
+}
+
+export function TransformComponentEditor(props: ComponentEditorProps) {
+    const globalStore = useGlobalStore();
+    const entity = globalStore.selection.first();
+    const [x, setX] = useState("");
+    const [y, setY] = useState("");
+    const [z, setZ] = useState("");
+    const [sx, setSX] = useState("");
+    const [sy, setSY] = useState("");
+    const [sz, setSZ] = useState("");
+    const [rx, setRX] = useState("");
+    const [ry, setRY] = useState("");
+    const [rz, setRZ] = useState("");
+    const [rw, setRW] = useState("");
+    const userInteraction = useRef(false);
+
+    useEffect(() => {
+        setX(`${props.component.translation.x}`);
+        setY(`${props.component.translation.y}`);
+        setZ(`${props.component.translation.z}`);
+        setSX(`${props.component.scale.x}`);
+        setSY(`${props.component.scale.y}`);
+        setSZ(`${props.component.scale.z}`);
+        setRX(`${props.component.rotation.x}`);
+        setRY(`${props.component.rotation.y}`);
+        setRZ(`${props.component.rotation.z}`);
+        setRW(`${props.component.rotation.w}`);
+    }, [entity, props.component]);
+
+    useEffect(() => {
+        if (!userInteraction.current) {
+            return;
+        }
+
+        userInteraction.current = false;
+
+        let numberX = parseFloat(x);
+        let numberY = parseFloat(y);
+        let numberZ = parseFloat(z);
+        let numberSX = parseFloat(sx);
+        let numberSY = parseFloat(sy);
+        let numberSZ = parseFloat(sz);
+        let numberRX = parseFloat(rx);
+        let numberRY = parseFloat(ry);
+        let numberRZ = parseFloat(rz);
+        let numberRW = parseFloat(rw);
+
+        if (
+            !Number.isNaN(numberX) &&
+            !Number.isNaN(numberY) &&
+            !Number.isNaN(numberZ) &&
+            !Number.isNaN(numberSX) &&
+            !Number.isNaN(numberSY) &&
+            !Number.isNaN(numberSZ) &&
+            !Number.isNaN(numberRX) &&
+            !Number.isNaN(numberRY) &&
+            !Number.isNaN(numberRZ) &&
+            !Number.isNaN(numberRW)
+        ) {
+            props.onSave(props.name, {
+                translation: {
+                    x: numberX,
+                    y: numberY,
+                    z: numberZ,
+                },
+                scale: {
+                    x: numberSX,
+                    y: numberSY,
+                    z: numberSZ,
+                },
+                rotation: {
+                    x: numberRX,
+                    y: numberRY,
+                    z: numberRZ,
+                    w: numberRW,
+                },
+            });
+        }
+    }, [x, y, z, sx, sy, sz, rx, ry, rz, rw]);
+
+    return (
+        <div className="ComponentEditor">
+            <VStack>
+                <label>Translation</label>
+                <HStack>
+                    <input
+                        id="x"
+                        type="number"
+                        value={x}
+                        onChange={(e) => handleChange(e, setX)}
+                    />
+                    <input
+                        id="y"
+                        type="number"
+                        value={y}
+                        onChange={(e) => handleChange(e, setY)}
+                    />
+                    <input
+                        id="z"
+                        type="number"
+                        value={z}
+                        onChange={(e) => handleChange(e, setZ)}
+                    />
+                </HStack>
+                <label>Scale</label>
+                <HStack>
+                    <input
+                        id="sx"
+                        type="number"
+                        value={sx}
+                        onChange={(e) => handleChange(e, setSX)}
+                    />
+                    <input
+                        id="sy"
+                        type="number"
+                        value={sy}
+                        onChange={(e) => handleChange(e, setSY)}
+                    />
+                    <input
+                        id="sz"
+                        type="number"
+                        value={sz}
+                        onChange={(e) => handleChange(e, setSZ)}
+                    />
+                </HStack>
+                <label>Rotation</label>
+                <HStack>
+                    <input
+                        id="rx"
+                        type="number"
+                        value={rx}
+                        onChange={(e) => handleChange(e, setRX)}
+                    />
+                    <input
+                        id="ry"
+                        type="number"
+                        value={ry}
+                        onChange={(e) => handleChange(e, setRY)}
+                    />
+                    <input
+                        id="rz"
+                        type="number"
+                        value={rz}
+                        onChange={(e) => handleChange(e, setRZ)}
+                    />
+                    <input
+                        id="rw"
+                        type="number"
+                        value={rw}
+                        onChange={(e) => handleChange(e, setRW)}
+                    />
+                </HStack>
+            </VStack>
+        </div>
+    );
+
+    function handleChange(
+        e: React.ChangeEvent<HTMLInputElement>,
+        setter: (value: string) => void,
+    ) {
+        userInteraction.current = true;
+        setter(e.target.value);
+    }
 }

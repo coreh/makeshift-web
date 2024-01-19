@@ -136,13 +136,6 @@ function EntityTreeNode({ entity }: EntityTreeNodeProps) {
                     name={name}
                     entity={entity.entity}
                 />
-                {!isOpen && isLoading && (
-                    <Lucide.Loader
-                        style={{
-                            animation: "spin 3000ms linear infinite",
-                        }}
-                    />
-                )}
             </TreeHeading>
             <TreeContent>
                 {isLoading && (

@@ -44,6 +44,7 @@
     --shadow-high: 0 4px 4px rgba(0, 0, 0, 0.2);
 
     font-size: 12px;
+    color-scheme: dark;
 }
 
 * {
@@ -65,7 +66,9 @@ main {
     padding: var(--control-gap);
 }
 
-textarea {
+textarea,
+input[type="text"],
+input[type="number"] {
     font: inherit;
     background: inherit;
     color: inherit;
@@ -318,8 +321,8 @@ svg.lucide {
     display: flex;
     flex-direction: row;
     height: calc(var(--control-height) * 2);
-    padding-left: var(--control-padding-x);
-    padding-right: var(--control-padding-x);
+    padding-left: var(--control-indent);
+    padding-right: var(--control-indent);
     align-items: center;
     justify-content: start;
     gap: var(--control-gap);
@@ -365,21 +368,30 @@ svg.lucide {
     }
 }
 
-.GenericComponentEditor {
+.ComponentEditor {
     textarea {
         background-color: var(--surface-minus-2);
         font-family: monospace;
-        /* color: var(--accent-code); */
         padding-left: var(--control-padding-x);
         padding-right: var(--control-padding-x);
         border-radius: var(--control-radius);
         height: calc(var(--control-height) * 4);
     }
-}
 
-.UnserializableComponentEditor {
-    display: flex;
-    align-items: center;
-    gap: var(--control-gap);
-    color: var(--accent);
+    label {
+        display: flex;
+        color: var(--accent);
+        height: var(--control-height);
+        align-items: center;
+        padding-left: var(--control-padding-x);
+        flex-grow: 1;
+    }
+
+    input {
+        background-color: var(--surface-minus-2);
+        padding-left: var(--control-padding-x);
+        padding-right: var(--control-padding-x);
+        border-radius: var(--control-radius);
+        height: var(--control-height);
+    }
 }
