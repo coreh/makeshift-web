@@ -24,11 +24,19 @@ export function TreeChevron({
     return <Collapsible.Trigger {...props} className={cn("Chevron")} />;
 }
 
-interface TreeHeadingProps {
+interface TreeHeadingProps extends React.HTMLAttributes<HTMLDivElement> {
     className?: string;
     children: React.ReactNode;
 }
 
-export function TreeHeading({ className, children }: TreeHeadingProps) {
-    return <div className={cn("Heading", className)}>{children}</div>;
+export function TreeHeading({
+    className,
+    children,
+    ...props
+}: TreeHeadingProps) {
+    return (
+        <div className={cn("Heading", className)} {...props}>
+            {children}
+        </div>
+    );
 }

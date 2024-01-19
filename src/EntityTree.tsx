@@ -63,77 +63,60 @@ function EntityTreeNode({ entity }: EntityTreeNodeProps) {
         const Name = JSON.parse(entity.optional.Name.JSON);
         name = Name[Object.keys(Name)[0]].name;
     }
-
-    const { data, isLoading, error } = useSWR(
-        {
-            request: "QUERY",
-            params: {
-                data: {
-                    optional: ["Name"],
-                    has: HAS,
-                },
-                filter: {
-                    when: {
-                        "==": {
-                            Parent: { JSON: JSON.stringify([parent]) },
-                        },
-                    },
-                },
-            },
-        },
-        { errorRetryInterval: 1000, keepPreviousData: false },
-    );
     const [isOpen, setIsOpen] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
     const hasBeenOpen = useRef(false);
+    const hasBeenHovered = useRef(false);
+    const hasBeenFocused = useRef(false);
 
     if (isOpen) {
         hasBeenOpen.current = true;
     }
 
-    const entities = data?.content?.entities;
+    if (isHovered) {
+        hasBeenHovered.current = true;
+    }
 
-    if (!data && error) {
-        return (
-            <TreeNode open={isOpen} onOpenChange={setIsOpen}>
-                <TreeHeading className="context:error-danger">
-                    <Lucide.PlugZap style={{ color: "var(--accent)" }} />
-                    <i
-                        style={{
-                            opacity: 0.5,
-                            color: "var(--accent)",
-                        }}
-                    >
-                        Failed to Load
-                    </i>
-                </TreeHeading>
-            </TreeNode>
-        );
+    if (isFocused) {
+        hasBeenOpen.current = true;
     }
-    if (isLoading) {
-        return (
-            <TreeNode open={isOpen} onOpenChange={setIsOpen}>
-                <TreeHeading>
-                    <Lucide.Loader
-                        style={{
-                            animation: "spin 3000ms linear infinite",
-                        }}
-                    />
-                    <i
-                        style={{
-                            opacity: 0.5,
-                        }}
-                    >
-                        Loading...
-                    </i>
-                </TreeHeading>
-            </TreeNode>
-        );
-    }
+
+    const query = {
+        request: "QUERY",
+        params: {
+            data: {
+                optional: ["Name"],
+                has: HAS,
+            },
+            filter: {
+                when: {
+                    "==": {
+                        Parent: { JSON: JSON.stringify([parent]) },
+                    },
+                },
+            },
+        },
+    };
+
+    const { data, isLoading, error } = useSWR(
+        hasBeenOpen.current || hasBeenHovered.current || hasBeenFocused.current
+            ? query
+            : null,
+        { errorRetryInterval: 1000, keepPreviousData: false },
+    );
+
+    const entities = data?.content?.entities;
 
     return (
         <TreeNode open={isOpen} onOpenChange={setIsOpen}>
-            <TreeHeading>
-                {entities?.length > 0 && (
+            <TreeHeading
+                onPointerOver={() => setIsHovered(true)}
+                onPointerOut={() => setIsHovered(false)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+            >
+                {entity.has.Children && (
                     <TreeChevron>
                         {isOpen ? (
                             <Lucide.ChevronDown />
@@ -148,8 +131,33 @@ function EntityTreeNode({ entity }: EntityTreeNodeProps) {
                     name={name}
                     entity={entity.entity}
                 />
+                {!isOpen && isLoading && (
+                    <Lucide.Loader
+                        style={{
+                            animation: "spin 3000ms linear infinite",
+                        }}
+                    />
+                )}
             </TreeHeading>
             <TreeContent>
+                {isLoading && (
+                    <TreeNode open={isOpen} onOpenChange={setIsOpen}>
+                        <TreeHeading>
+                            <Lucide.Loader
+                                style={{
+                                    animation: "spin 3000ms linear infinite",
+                                }}
+                            />
+                            Loading…
+                        </TreeHeading>
+                    </TreeNode>
+                )}
+                {!data && error && (
+                    <Lucide.PlugZap
+                        className="context:error-danger"
+                        style={{ color: "var(--accent)" }}
+                    />
+                )}
                 {hasBeenOpen.current &&
                     entities?.map((entity: any) => {
                         return (
