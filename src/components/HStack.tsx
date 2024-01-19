@@ -1,5 +1,11 @@
 import React from "react";
+import cn from "classnames";
 
-export function HStack({ children }: { children: React.ReactNode }) {
-    return <div className="HStack">{children}</div>;
+interface HStackProps {
+    grow?: boolean;
+    children?: React.ReactNode;
+}
+
+export function HStack({ grow, children }: HStackProps) {
+    return <div className={cn("HStack", grow && "grow")}>{children}</div>;
 }

@@ -10,6 +10,7 @@ import {
 import * as Lucide from "lucide-react";
 import { UIContext } from "./components/common";
 import { useGlobalStore } from "./store";
+import { deserialize, serialize } from "./utils";
 
 const HAS = [
     "Children",
@@ -39,12 +40,10 @@ export function EntityTree() {
         { errorRetryInterval: 1000, keepPreviousData: false },
     );
 
-    if (error) return <div />;
-    if (isLoading) return <div>Loading...</div>;
-
     const entities = data?.content?.entities;
+
     return (
-        <div>
+        <div className="EntityTree">
             {entities?.map((entity: any) => {
                 return <EntityTreeNode entity={entity} key={entity.entity} />;
             })}
@@ -59,11 +58,7 @@ interface EntityTreeNodeProps {
 function EntityTreeNode({ entity }: EntityTreeNodeProps) {
     const parent = entity.entity;
 
-    let name: string | undefined;
-    if (entity.optional.Name != null) {
-        const Name = JSON.parse(entity.optional.Name.JSON);
-        name = Name[Object.keys(Name)[0]].name;
-    }
+    let name: string | undefined = deserialize(entity.optional.Name)?.name;
     const [isOpen, setIsOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
@@ -94,7 +89,7 @@ function EntityTreeNode({ entity }: EntityTreeNodeProps) {
             filter: {
                 when: {
                     "==": {
-                        Parent: { JSON: JSON.stringify([parent]) },
+                        Parent: serialize([parent]),
                     },
                 },
             },

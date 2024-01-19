@@ -4,8 +4,13 @@ import useSWR, { SWRConfig } from "swr";
 
 import { Status } from "./components/Status";
 import { EntityTree } from "./EntityTree";
+import { Inspector } from "./Inspector";
+import { VStack } from "./components/VStack";
+import { Panel } from "./components/Panel";
+import { HStack } from "./components/HStack";
+import { Toolbar } from "./components/Toolbar";
 
-async function fetcher(obj: any) {
+export async function fetcher(obj: any) {
     const res = await fetch("http://localhost:8765/brp", {
         method: "POST",
         headers: {
@@ -34,8 +39,19 @@ function Ping() {
 function App() {
     return (
         <SWRConfig value={{ fetcher }}>
-            <Ping />
-            <EntityTree />
+            <VStack grow>
+                <Toolbar>
+                    <Ping />
+                </Toolbar>
+                <HStack grow>
+                    <Panel>
+                        <EntityTree />
+                    </Panel>
+                    <Panel>
+                        <Inspector />
+                    </Panel>
+                </HStack>
+            </VStack>
         </SWRConfig>
     );
 }

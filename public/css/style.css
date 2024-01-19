@@ -29,10 +29,8 @@
     --accent-asset-contrast: #fff;
     --accent-code-contrast: #fff;
 
-    /* --accent: var(--surface-plus-1);
-    --contrast: var(--surface-plus-1-contrast); */
-    --accent: var(--accent-primary);
-    --contrast: var(--accent-primary-contrast);
+    --accent: var(--surface-plus-1);
+    --contrast: var(--surface-plus-1-contrast);
     --text: var(--surface-plus-1-contrast);
 
     --control-radius: 0.3rem;
@@ -56,8 +54,23 @@
 
 body {
     margin: 0;
-    background: var(--surface-minus-1);
-    color: var(--surface-minus-1-contrast);
+    background: var(--surface-0);
+    color: var(--surface-0-contrast);
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: var(--control-gap);
+}
+
+textarea {
+    font: inherit;
+    background: inherit;
+    color: inherit;
+    border: none;
+    resize: none;
 }
 
 .context\:primary {
@@ -101,17 +114,17 @@ body {
 }
 
 .context\:none {
-    /* --accent: var(--surface-plus-1);
-    --contrast: var(--surface-plus-1-contrast); */
-    --accent: var(--accent-primary);
-    --contrast: var(--accent-primary-contrast);
+    --accent: var(--surface-plus-1);
+    --contrast: var(--surface-plus-1-contrast);
 }
 
 .Button {
     display: flex;
-    flex-grow: 1;
+    /* flex-grow: 1; */
+    /* flex-basis: 0; */
     align-items: center;
     justify-content: center;
+    gap: var(--control-gap);
     appearance: none;
     font-size: inherit;
     border-radius: var(--control-radius);
@@ -123,6 +136,12 @@ body {
     text-shadow: var(--shadow-low);
     background-color: var(--accent);
     color: var(--contrast);
+
+    /* special case buttons without context to be a bit darker */
+    &:not([class*="context:"]) {
+        background-color: var(--surface-0);
+        color: var(--surface-0-contrast);
+    }
 
     &:not(:disabled):hover {
         filter: brightness(1.1);
@@ -148,6 +167,10 @@ body {
     flex-direction: column;
     gap: var(--control-gap);
     align-items: stretch;
+
+    &.grow {
+        flex-grow: 1;
+    }
 }
 
 .HStack {
@@ -155,6 +178,10 @@ body {
     flex-direction: row;
     gap: var(--control-gap);
     align-items: stretch;
+
+    &.grow {
+        flex-grow: 1;
+    }
 }
 
 .Status {
@@ -253,7 +280,8 @@ body {
     }
 }
 
-.EntityIcon {
+.EntityIcon,
+.ComponentIcon {
     color: var(--accent);
 }
 
@@ -261,4 +289,97 @@ svg.lucide {
     width: 1rem;
     height: 1rem;
     display: inline-flex;
+}
+
+.EntityTree {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-basis: 0;
+    overflow: auto;
+}
+
+.Panel {
+    background-color: var(--surface-minus-1);
+    color: var(--surface-minus-1-contrast);
+    border-radius: var(--control-radius);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-basis: 0;
+    overflow: auto;
+    gap: var(--control-gap);
+}
+
+.Toolbar {
+    background-color: var(--surface-minus-1);
+    color: var(--surface-minus-1-contrast);
+    border-radius: var(--control-radius);
+    display: flex;
+    flex-direction: row;
+    height: calc(var(--control-height) * 2);
+    padding-left: var(--control-padding-x);
+    padding-right: var(--control-padding-x);
+    align-items: center;
+    justify-content: start;
+    gap: var(--control-gap);
+}
+
+.Inspector {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-basis: 0;
+    overflow: auto;
+}
+
+.ComponentInspector {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid var(--surface-0);
+
+    .Heading {
+        font-size: 0.8rem;
+        text-shadow: var(--shadow-low);
+        display: flex;
+        align-items: center;
+        height: var(--control-height);
+        padding-left: var(--control-padding-x);
+        padding-right: var(--control-padding-x);
+        gap: var(--control-gap);
+
+        .EntityIcon,
+        .Chevron {
+            will-change: transform; /* fix for some flickering with the filter */
+            filter: drop-shadow(var(--shadow-low));
+        }
+    }
+
+    .Content {
+        border-top: 1px solid var(--surface-minus-1);
+        border-bottom: 1px solid var(--surface-minus-1);
+        display: flex;
+        flex-direction: column;
+        gap: var(--control-gap);
+        padding: var(--control-padding-x);
+    }
+}
+
+.GenericComponentEditor {
+    textarea {
+        background-color: var(--surface-minus-2);
+        font-family: monospace;
+        /* color: var(--accent-code); */
+        padding-left: var(--control-padding-x);
+        padding-right: var(--control-padding-x);
+        border-radius: var(--control-radius);
+        height: calc(var(--control-height) * 4);
+    }
+}
+
+.UnserializableComponentEditor {
+    display: flex;
+    align-items: center;
+    gap: var(--control-gap);
+    color: var(--accent);
 }

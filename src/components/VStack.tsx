@@ -1,5 +1,11 @@
 import React from "react";
+import cn from "classnames";
 
-export function VStack({ children }: { children: React.ReactNode }) {
-    return <div className="VStack">{children}</div>;
+interface VStackProps {
+    grow?: boolean;
+    children?: React.ReactNode;
+}
+
+export function VStack({ grow, children }: VStackProps) {
+    return <div className={cn("VStack", grow && "grow")}>{children}</div>;
 }
