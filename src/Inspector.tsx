@@ -361,7 +361,7 @@ function VisibilityComponentEditor(props: ComponentEditorProps) {
                 <select
                     onChange={(e) => props.onSave(props.name, e.target.value)}
                 >
-                    <option>Inherit</option>
+                    <option>Inherited</option>
                     <hr />
                     <option>Visible</option>
                     <option>Hidden</option>
