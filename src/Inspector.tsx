@@ -8,6 +8,8 @@ import { VStack } from "./components/VStack";
 import { HStack } from "./components/HStack";
 import cn from "classnames";
 import * as Lucide from "lucide-react";
+import { TextInput } from "./components/Input";
+import { Trackball } from "./components/Trackball";
 
 export function Inspector() {
     const globalStore = useGlobalStore();
@@ -263,96 +265,89 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
 
     return (
         <div className="ComponentEditor">
-            <VStack>
-                <label>Translation</label>
-                <HStack>
-                    <input
-                        id="x"
-                        type="number"
-                        step={0.01}
+            <HStack>
+                <VStack grow>
+                    <label>Translation</label>
+                    <TextInput
+                        label="X"
                         value={x}
-                        onChange={(e) => handleChange(e, setX)}
+                        onSave={(value) => handleChange(value, setX)}
                     />
-                    <input
-                        id="y"
-                        type="number"
-                        step={0.01}
+                    <TextInput
+                        label="Y"
                         value={y}
-                        onChange={(e) => handleChange(e, setY)}
+                        onSave={(value) => handleChange(value, setY)}
                     />
-                    <input
-                        id="z"
-                        type="number"
-                        step={0.01}
+                    <TextInput
+                        label="Z"
                         value={z}
-                        onChange={(e) => handleChange(e, setZ)}
+                        onSave={(value) => handleChange(value, setZ)}
                     />
-                </HStack>
-                <label>Scale</label>
-                <HStack>
-                    <input
-                        id="sx"
-                        type="number"
-                        step={0.01}
+                </VStack>
+                <VStack grow>
+                    <label>Scale</label>
+                    <TextInput
+                        label="SX"
                         value={sx}
-                        onChange={(e) => handleChange(e, setSX)}
+                        onSave={(value) => handleChange(value, setSX)}
                     />
-                    <input
-                        id="sy"
-                        type="number"
-                        step={0.01}
+                    <TextInput
+                        label="SY"
                         value={sy}
-                        onChange={(e) => handleChange(e, setSY)}
+                        onSave={(value) => handleChange(value, setSY)}
                     />
-                    <input
-                        id="sz"
-                        type="number"
-                        step={0.01}
+                    <TextInput
+                        label="SZ"
                         value={sz}
-                        onChange={(e) => handleChange(e, setSZ)}
+                        onSave={(value) => handleChange(value, setSZ)}
                     />
-                </HStack>
+                </VStack>
+            </HStack>
+            <VStack>
                 <label>Rotation</label>
                 <HStack>
-                    <input
-                        id="rx"
-                        type="number"
-                        step={0.01}
-                        value={rx}
-                        onChange={(e) => handleChange(e, setRX)}
-                    />
-                    <input
-                        id="ry"
-                        type="number"
-                        step={0.01}
-                        value={ry}
-                        onChange={(e) => handleChange(e, setRY)}
-                    />
-                    <input
-                        id="rz"
-                        type="number"
-                        step={0.01}
-                        value={rz}
-                        onChange={(e) => handleChange(e, setRZ)}
-                    />
-                    <input
-                        id="rw"
-                        type="number"
-                        step={0.01}
-                        value={rw}
-                        onChange={(e) => handleChange(e, setRW)}
+                    <VStack grow>
+                        <TextInput
+                            label="RX"
+                            value={rx}
+                            onSave={(value) => handleChange(value, setRX)}
+                        />
+                        <TextInput
+                            label="RY"
+                            value={ry}
+                            onSave={(value) => handleChange(value, setRY)}
+                        />
+                        <TextInput
+                            label="RZ"
+                            value={rz}
+                            onSave={(value) => handleChange(value, setRZ)}
+                        />
+                        <TextInput
+                            label="RW"
+                            value={rw}
+                            onSave={(value) => handleChange(value, setRW)}
+                        />
+                    </VStack>
+                    <Trackball
+                        x={parseFloat(rx)}
+                        y={parseFloat(ry)}
+                        z={parseFloat(rz)}
+                        w={parseFloat(rw)}
+                        onSave={(rx, ry, rz, rw) => {
+                            handleChange(rx.toString().slice(0, 9), setRX);
+                            handleChange(ry.toString().slice(0, 9), setRY);
+                            handleChange(rz.toString().slice(0, 9), setRZ);
+                            handleChange(rw.toString().slice(0, 9), setRW);
+                        }}
                     />
                 </HStack>
             </VStack>
         </div>
     );
 
-    function handleChange(
-        e: React.ChangeEvent<HTMLInputElement>,
-        setter: (value: string) => void,
-    ) {
+    function handleChange(value: string, setter: (value: string) => void) {
         userInteraction.current = true;
-        setter(e.target.value);
+        setter(value);
     }
 }
 

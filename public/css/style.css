@@ -11,6 +11,7 @@
     --surface-plus-1-contrast: #fff;
     --surface-plus-2-contrast: #000;
 
+    --accent-primary: #799bbb;
     --accent-error-danger: #cc3b40;
     --accent-warning: #f8a34e;
     --accent-success: #3bb273;
@@ -18,8 +19,10 @@
     --accent-resource: #10b981;
     --accent-asset: #a156d6;
     --accent-code: #ea7c45;
+    --accent-x: #ee3752;
+    --accent-y: #6f9b1f;
+    --accent-z: #2f84e3;
 
-    --accent-primary: #799bbb;
     --accent-primary-contrast: #fff;
     --accent-error-danger-contrast: #fff;
     --accent-warning-contrast: #000;
@@ -28,6 +31,9 @@
     --accent-resource-contrast: #000;
     --accent-asset-contrast: #fff;
     --accent-code-contrast: #fff;
+    --accent-x-contrast: #000b;
+    --accent-y-contrast: #000b;
+    --accent-z-contrast: #000b;
 
     --accent: var(--surface-plus-1);
     --contrast: var(--surface-plus-1-contrast);
@@ -380,19 +386,167 @@ svg.lucide {
     }
 
     label {
+        font-size: 0.8rem;
         display: flex;
         color: var(--accent);
         height: var(--control-height);
         align-items: center;
+        padding-right: var(--control-padding-x);
+    }
+}
+
+.TextInput {
+    display: flex;
+    height: var(--control-height);
+    background-color: var(--surface-minus-2);
+    padding-left: var(--control-padding-x);
+    padding-right: var(--control-padding-x);
+    border-radius: var(--control-radius);
+    gap: var(--control-gap);
+
+    label {
+        display: flex;
+        font-size: 0.8rem;
+        color: var(--accent);
+        align-items: center;
         padding-left: var(--control-padding-x);
-        flex-grow: 1;
+        flex-grow: 0;
+        flex-basis: content;
+        max-width: 50%;
     }
 
     input {
-        background-color: var(--surface-minus-2);
-        padding-left: var(--control-padding-x);
-        padding-right: var(--control-padding-x);
-        border-radius: var(--control-radius);
-        height: var(--control-height);
+        display: flex;
+        text-align: end;
+        flex-grow: 1;
+        padding: 0;
+
+        &:focus {
+            outline: none;
+        }
+    }
+}
+
+.Trackball {
+    display: flex;
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: calc(var(--control-height) * 4 + var(--control-gap) * 3);
+    width: calc(var(--control-height) * 4 + var(--control-gap) * 3);
+    border-radius: 100%;
+
+    .Ring {
+        display: flex;
+        background: var(--surface-minus-2);
+        padding: calc(var(--control-gap) * 1.5);
+        border-radius: 100%;
+        width: 100%;
+        height: 100%;
+        transition: border 0.2s ease-in-out;
+        cursor:
+            url("../cursors/rotate.svg") 12 12,
+            auto;
+        box-shadow: var(--shadow-high) inset;
+
+        &:focus {
+            outline: 2px solid
+                color-mix(in srgb, var(--accent) 80%, transparent);
+        }
+    }
+
+    .Ball {
+        overflow: hidden;
+        display: flex;
+        border-radius: 100%;
+        width: 100%;
+        border: 1px solid var(--surface-minus-2);
+        height: 100%;
+        background: radial-gradient(
+                circle at center center,
+                transparent,
+                transparent,
+                transparent,
+                var(--surface-plus-2)
+            ),
+            radial-gradient(
+                circle at center 30%,
+                var(--surface-0),
+                var(--surface-minus-1),
+                var(--surface-minus-2),
+                var(--surface-minus-2),
+                var(--surface-0)
+            );
+        transition: filter 0.5s ease-in-out;
+        cursor:
+            url("../cursors/rotate-3d.svg") 12 12,
+            auto;
+
+        box-shadow: var(--shadow-medium);
+
+        &:focus {
+            outline: 2px solid
+                color-mix(in srgb, var(--accent) 80%, transparent);
+        }
+    }
+
+    .Gymbal {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+
+        .Axis {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            width: 20%;
+            height: 20%;
+            border-radius: 100%;
+        }
+
+        .X {
+            background-color: var(--accent-x);
+            color: var(--accent-x-contrast);
+        }
+
+        .Y {
+            background-color: var(--accent-y);
+            color: var(--accent-x-contrast);
+        }
+
+        .Z {
+            background-color: var(--accent-z);
+            color: var(--accent-x-contrast);
+        }
+
+        .MinusX {
+            background: color-mix(in srgb, var(--accent-x) 50%, transparent);
+            border: 2px solid var(--accent-x);
+            color: transparent;
+            &:hover {
+                color: inherit;
+            }
+        }
+
+        .MinusY {
+            background: color-mix(in srgb, var(--accent-y) 50%, transparent);
+            border: 2px solid var(--accent-y);
+            color: transparent;
+            &:hover {
+                color: inherit;
+            }
+        }
+
+        .MinusZ {
+            background: color-mix(in srgb, var(--accent-z) 50%, transparent);
+            border: 2px solid var(--accent-z);
+            color: transparent;
+            &:hover {
+                color: inherit;
+            }
+        }
     }
 }

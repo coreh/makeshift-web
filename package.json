@@ -11,6 +11,7 @@
   "author": "",
   "license": "(MIT OR Apache-2.0)",
   "dependencies": {
+    "@math.gl/core": "^4.0.0",
     "@radix-ui/react-collapsible": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
     "@types/bun": "^1.0.2",
