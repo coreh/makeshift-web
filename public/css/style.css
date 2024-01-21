@@ -557,67 +557,40 @@ svg.lucide {
  */
 
 .SelectTrigger {
-    /* Flexbox utilities */
     display: flex;
-    height: 2.25rem; /* h-9 */
-    width: 100%; /* w-full */
-    align-items: center; /* items-center */
-    justify-content: space-between; /* justify-between */
-    white-space: nowrap; /* whitespace-nowrap */
+    min-height: calc(var(--control-height));
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    white-space: nowrap;
 
-    /* Borders and background */
-    border-radius: 0.375rem; /* rounded-md */
-    border: 1px solid; /* border */
-    border-color: var(--border-input); /* border-input */
-    background-color: transparent; /* bg-transparent */
+    border-radius: var(--control-radius);
+    border: none;
+    border-color: var(--border-input);
+    background-color: var(--surface-minus-2);
 
-    /* Spacing and size */
-    padding-left: 0.75rem; /* px-3 */
-    padding-right: 0.75rem; /* px-3 */
-    padding-top: 0.5rem; /* py-2 */
-    padding-bottom: 0.5rem; /* py-2 */
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
 
-    /* Typography */
-    font-size: 0.875rem; /* text-sm */
+    font-size: 0.875rem;
 
-    /* Effects */
-    box-shadow: var(--shadow-sm); /* shadow-sm */
-    --tw-ring-offset-color: var(
-        --ring-offset-background
-    ); /* ring-offset-background */
-    --tw-placeholder-opacity: 1;
-    color: rgba(
-        156,
-        163,
-        175,
-        var(--tw-placeholder-opacity)
-    ); /* placeholder:text-muted-foreground */
+    color: var(--accent);
 
-    /* Focus states */
-    outline: 2px solid transparent;
-    outline-offset: 2px;
     &:focus {
-        outline: none;
-        box-shadow:
-            var(--ring-offset-background),
-            0 0 #0000,
-            0 0 #0000,
-            var(--ring-1) inset,
-            0 0 0 var(--ring-ring) inset;
+        outline: 2px solid color-mix(in srgb, var(--accent) 80%, transparent);
+        outline-offset: 1px;
     }
 
-    /* Disabled states */
     &:disabled {
-        cursor: not-allowed; /* disabled:cursor-not-allowed */
-        opacity: 0.5; /* disabled:opacity-50 */
+        cursor: not-allowed;
+        opacity: 0.5;
     }
 
-    /* Direct child span */
     & > span {
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        -webkit-line-clamp: 1; /* [&>span]:line-clamp-1 */
+        display: flex;
+        gap: var(--control-gap);
     }
 }
 
@@ -631,79 +604,54 @@ svg.lucide {
 }
 
 .SelectContent {
-    /* Positioning and Z-index */
     position: relative;
     z-index: 50;
-
-    /* Sizing */
-    max-height: 24rem; /* max-h-96 */
-    min-width: 8rem; /* min-w-[8rem] */
-
-    /* Overflow, Borders, and Background */
+    max-height: 24rem;
+    min-width: 8rem;
     overflow: hidden;
-    border-radius: 0.375rem; /* rounded-md */
-    border: 1px solid; /* Adjust the color as needed */
-    background-color: var(--bg-popover); /* bg-popover */
-
-    /* Text Color */
-    color: var(--text-popover-foreground); /* text-popover-foreground */
-
-    /* Shadow */
-    box-shadow: var(--shadow-md); /* shadow-md */
-
-    /* Data attribute based states for animations and transitions */
+    border-radius: var(--control-radius);
+    background-color: var(--surface-minus-2);
+    color: var(--text-popover-foreground);
+    box-shadow: var(--shadow-medium);
     &[data-state="open"] {
-        animation:
-            fadeIn 0.3s ease-in-out,
-            zoomIn 0.3s ease-in-out; /* animate-in, fade-in-0, zoom-in-95 */
+        animation: fadeIn 0.1s ease-out;
     }
 
-    &[data-state="closed"] {
-        animation:
-            fadeOut 0.3s ease-in-out,
-            zoomOut 0.3s ease-in-out; /* animate-out, fade-out-0, zoom-out-95 */
+    &:not([data-state="open"]) {
+        animation: fadeOut 0.5s ease-out;
     }
 
     &[data-side="bottom"] {
-        animation: slideInFromTop 0.3s ease-in-out; /* slide-in-from-top-2 */
+        animation: slideInFromTop 0.1s ease-out;
     }
 
     &[data-side="left"] {
-        animation: slideInFromRight 0.3s ease-in-out; /* slide-in-from-right-2 */
+        animation: slideInFromRight 0.1s ease-out;
     }
 
     &[data-side="right"] {
-        animation: slideInFromLeft 0.3s ease-in-out; /* slide-in-from-left-2 */
+        animation: slideInFromLeft 0.1s ease-out;
     }
 
     &[data-side="top"] {
-        animation: slideInFromBottom 0.3s ease-in-out; /* slide-in-from-bottom-2 */
+        animation: slideInFromBottom 0.1s ease-out;
     }
 
     &.position\:popper {
-        /* Conditional translations based on data-side attribute */
         &[data-side="bottom"] {
-            transform: translateY(
-                0.25rem
-            ); /* translate-y-1 (assuming 1 unit is 0.25rem) */
+            transform: translateY(0.25rem);
         }
 
         &[data-side="left"] {
-            transform: translateX(
-                -0.25rem
-            ); /* -translate-x-1 (assuming 1 unit is 0.25rem) */
+            transform: translateX(-0.25rem);
         }
 
         &[data-side="right"] {
-            transform: translateX(
-                0.25rem
-            ); /* translate-x-1 (assuming 1 unit is 0.25rem) */
+            transform: translateX(0.25rem);
         }
 
         &[data-side="top"] {
-            transform: translateY(
-                -0.25rem
-            ); /* -translate-y-1 (assuming 1 unit is 0.25rem) */
+            transform: translateY(-0.25rem);
         }
     }
 }
@@ -712,97 +660,79 @@ svg.lucide {
     padding: 0.25rem;
 
     &.position\:popper {
-        /* Height and Width */
-        height: var(
-            --radix-select-trigger-height
-        ); /* h-[var(--radix-select-trigger-height)] */
-        width: 100%; /* w-full */
-
-        /* Minimum Width */
-        min-width: var(
-            --radix-select-trigger-width
-        ); /* min-w-[var(--radix-select-trigger-width)] */
+        height: var(--radix-select-trigger-height);
+        width: 100%;
+        min-width: var(--radix-select-trigger-width);
     }
 }
 
 .SelectLabel {
-    /* Padding */
-    padding-left: 0.5rem; /* px-2 (assuming 1 unit is 0.25rem) */
-    padding-right: 0.5rem; /* px-2 */
-    padding-top: 0.375rem; /* py-1.5 (assuming 1 unit is 0.25rem and 1.5 units is 0.375rem) */
-    padding-bottom: 0.375rem; /* py-1.5 */
-
-    /* Typography */
-    font-size: 0.875rem; /* text-sm (assuming 1rem is the base size and sm corresponds to 0.875rem) */
-    font-weight: 600; /* font-semibold (typically corresponds to a font-weight of 600) */
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 600;
 }
 
 .SelectItem {
-    /* Positioning and Layout */
     position: relative;
     display: flex;
     width: 100%;
     cursor: default;
-    user-select: none; /* select-none */
+    user-select: none;
     align-items: center;
 
-    /* Borders and Background */
-    border-radius: 0.125rem; /* rounded-sm */
-
-    /* Padding and Typography */
-    padding-top: 0.375rem; /* py-1.5 (assuming 1 unit is 0.25rem and 1.5 units is 0.375rem) */
-    padding-bottom: 0.375rem; /* py-1.5 */
-    padding-left: 0.5rem; /* pl-2 */
-    padding-right: 2rem; /* pr-8 */
-    font-size: 0.875rem; /* text-sm */
-    outline: none;
-
-    /* Focus states */
-    &:focus {
-        background-color: var(--bg-accent); /* focus:bg-accent */
-        color: var(--text-accent-foreground); /* focus:text-accent-foreground */
+    & > * {
+        display: flex;
+        gap: var(--control-gap);
     }
 
-    /* Data attribute based states for disabled */
+    border-radius: 0.125rem;
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+    padding-left: 0.5rem;
+    padding-right: 2rem;
+    font-size: 0.875rem;
+    outline: none;
+
+    &:focus {
+        background-color: var(--accent);
+        color: var(--accent-contrast);
+    }
+
     &[data-disabled] {
-        pointer-events: none; /* data-[disabled]:pointer-events-none */
-        opacity: 0.5; /* data-[disabled]:opacity-50 */
+        pointer-events: none;
+        opacity: 0.5;
     }
 }
 
 .SelectItemIndicator {
-    /* Positioning */
     position: absolute;
-    right: 0.5rem; /* right-2 (assuming 1 unit is 0.25rem) */
+    right: 0.5rem;
 
-    /* Flexbox Layout */
     display: flex;
     align-items: center;
     justify-content: center;
 
-    /* Sizing */
-    height: 0.875rem; /* h-3.5 (assuming 1 unit is 0.25rem and 3.5 units is 0.875rem) */
-    width: 0.875rem; /* w-3.5 */
+    height: 0.875rem;
+    width: 0.875rem;
 }
 
 .SelectItemIndicatorCheck {
-    /* Sizing */
-    height: 1rem; /* h-4 (assuming 1 unit is 0.25rem) */
-    width: 1rem; /* w-4 */
+    height: 1rem;
+    width: 1rem;
 }
 
 .SelectSeparator {
-    /* Margins */
-    margin-left: -0.25rem; /* -mx-1 (assuming 1 unit is 0.25rem) */
-    margin-right: -0.25rem; /* -mx-1 */
-    margin-top: 0.25rem; /* my-1 */
-    margin-bottom: 0.25rem; /* my-1 */
+    margin-left: -0.25rem;
+    margin-right: -0.25rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
 
-    /* Sizing */
-    height: 1px; /* h-px */
+    height: 1px;
 
-    /* Background Color */
-    background-color: var(--bg-muted); /* bg-muted */
+    background-color: var(--surface-minus-1);
 }
 
 /* Animation keyframes */
@@ -844,36 +774,44 @@ svg.lucide {
 
 @keyframes slideInFromTop {
     from {
+        opacity: 0;
         transform: translateY(-2rem);
     }
     to {
+        opacity: 1;
         transform: translateY(0);
     }
 }
 
 @keyframes slideInFromRight {
     from {
+        opacity: 0;
         transform: translateX(2rem);
     }
     to {
+        opacity: 1;
         transform: translateX(0);
     }
 }
 
 @keyframes slideInFromLeft {
     from {
+        opacity: 0;
         transform: translateX(-2rem);
     }
     to {
+        opacity: 1;
         transform: translateX(0);
     }
 }
 
 @keyframes slideInFromBottom {
     from {
+        opacity: 0;
         transform: translateY(2rem);
     }
     to {
+        opacity: 1;
         transform: translateY(0);
     }
 }
