@@ -31,10 +31,25 @@ export function Inspector() {
 
     const components = data?.content?.entity?.components;
 
+    const componentEntries = Object.entries(components ?? {})
+        .map(([name, component]) => {
+            return [name, deserialize(component as any)];
+        })
+        .sort(([nameA, componentA], [nameB, componentB]) => {
+            const priorityA = getComponentSortingPriority(nameA, componentA);
+            const priorityB = getComponentSortingPriority(nameB, componentB);
+
+            if (priorityA === priorityB) {
+                return nameA.localeCompare(nameB);
+            }
+
+            return priorityA - priorityB;
+        });
+
     return (
         <div className="Inspector">
             {components &&
-                Object.entries(components)?.map(([name, component]) => {
+                componentEntries.map(([name, component]) => {
                     return (
                         <ComponentInspector
                             key={name}
@@ -56,60 +71,12 @@ export function ComponentInspector({
     name,
     component,
 }: ComponentInspectorProps) {
-    component = deserialize(component);
-
     const globalStore = useGlobalStore();
 
-    let context;
-    let label;
-    let Icon: React.FC<{}>;
-    let ComponentEditor: React.FC<ComponentEditorProps> | undefined;
-    switch (name) {
-        case "bevy_hierarchy::components::children::Children":
-        case "bevy_hierarchy::components::parent::Parent":
-            return;
-        case "bevy_render::view::visibility::InheritedVisibility":
-        case "bevy_render::view::visibility::ViewVisibility":
-        case "bevy_transform::components::global_transform::GlobalTransform":
-        case "bevy_render::primitives::CascadesFrusta":
-        case "bevy_pbr::light::Cascades":
-        case "bevy_pbr::bundle::CascadesVisibleEntities":
-        case "bevy_ui::measurement::ContentSize":
-        case "bevy_ui::widget::text::TextFlags":
-        case "bevy_text::pipeline::TextLayoutInfo":
-        case "bevy_ui::ui_node::Node":
-        case "bevy_window::window::Window":
-        case "bevy_render::camera::camera::Camera":
-        case "bevy_render::view::visibility::VisibleEntities":
-            context = "code";
-            Icon = Lucide.ArrowBigRightDash;
-            label = "Computed";
-            break;
-        case "bevy_window::window::PrimaryWindow":
-            context = "code";
-            Icon = Lucide.Tag;
-            label = "Marker";
-            break;
-        case "bevy_render::view::visibility::Visibility":
-            Icon = Lucide.Eye;
-            ComponentEditor = VisibilityComponentEditor;
-            break;
-        case "bevy_transform::components::transform::Transform":
-            Icon = Lucide.Move3D;
-            ComponentEditor = TransformComponentEditor;
-            break;
-        default:
-            if (component === Unserializable) {
-                context = "code";
-                Icon = Lucide.Binary;
-                label = "Unserializable";
-            } else {
-                context = "primary";
-                ComponentEditor = GenericComponentEditor;
-                Icon = Lucide.ToyBrick;
-            }
-            break;
-    }
+    const { context, Icon, label, ComponentEditor } = getComponentInfo(
+        name,
+        component,
+    );
 
     return (
         <div className="ComponentInspector">
@@ -154,6 +121,93 @@ interface ComponentEditorProps {
     name: string;
     component: any;
     onSave: (name: string, component: any) => void;
+}
+
+function getComponentSortingPriority(name: string, component: any) {
+    const { label } = getComponentInfo(name, component);
+    console.log(name, label);
+
+    if (label === "Marker") {
+        return -10;
+    }
+
+    if (label === "Unserializable") {
+        return 100;
+    }
+
+    if (label === "Computed") {
+        return 20;
+    }
+
+    switch (name) {
+        case "bevy_transform::components::transform::Transform":
+            return -100;
+        case "bevy_render::view::visibility::Visibility":
+            return -90;
+    }
+
+    return 0;
+}
+
+function getComponentInfo(name: string, component: any) {
+    let context;
+    let label;
+    let Icon: React.FC<{}> = Lucide.ToyBrick;
+    let ComponentEditor: React.FC<ComponentEditorProps> | undefined;
+
+    switch (name) {
+        case "bevy_hierarchy::components::children::Children":
+        case "bevy_hierarchy::components::parent::Parent":
+            break;
+        case "bevy_render::view::visibility::InheritedVisibility":
+        case "bevy_render::view::visibility::ViewVisibility":
+        case "bevy_transform::components::global_transform::GlobalTransform":
+        case "bevy_render::primitives::CascadesFrusta":
+        case "bevy_pbr::light::Cascades":
+        case "bevy_pbr::bundle::CascadesVisibleEntities":
+        case "bevy_ui::measurement::ContentSize":
+        case "bevy_ui::widget::text::TextFlags":
+        case "bevy_text::pipeline::TextLayoutInfo":
+        case "bevy_ui::ui_node::Node":
+        case "bevy_window::window::Window":
+        case "bevy_render::camera::camera::Camera":
+        case "bevy_render::view::visibility::VisibleEntities":
+        case "bevy_render::primitives::Frustum":
+            context = "code";
+            Icon = Lucide.ArrowBigRightDash;
+            label = "Computed";
+            break;
+        case "bevy_window::window::PrimaryWindow":
+            context = "code";
+            Icon = Lucide.Tag;
+            label = "Marker";
+            break;
+        case "bevy_render::view::visibility::Visibility":
+            Icon = Lucide.Eye;
+            ComponentEditor = VisibilityComponentEditor;
+            break;
+        case "bevy_transform::components::transform::Transform":
+            Icon = Lucide.Move3D;
+            ComponentEditor = TransformComponentEditor;
+            break;
+        default:
+            if (component === Unserializable) {
+                context = "code";
+                Icon = Lucide.Binary;
+                label = "Unserializable";
+            } else {
+                context = "primary";
+                ComponentEditor = GenericComponentEditor;
+            }
+            break;
+    }
+
+    return {
+        context,
+        label,
+        Icon,
+        ComponentEditor,
+    };
 }
 
 export function GenericComponentEditor(props: ComponentEditorProps) {
