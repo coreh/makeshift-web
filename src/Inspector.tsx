@@ -10,6 +10,15 @@ import cn from "classnames";
 import * as Lucide from "lucide-react";
 import { TextInput } from "./components/Input";
 import { Trackball } from "./components/Trackball";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectSeparator,
+    SelectTrigger,
+    SelectValue,
+} from "./components/Select";
 
 export function Inspector() {
     const globalStore = useGlobalStore();
@@ -437,14 +446,31 @@ function VisibilityComponentEditor(props: ComponentEditorProps) {
     return (
         <div className="ComponentEditor">
             <VStack>
-                <select
-                    onChange={(e) => props.onSave(props.name, e.target.value)}
+                <Select
+                    value={props.component}
+                    onValueChange={(value) => props.onSave(props.name, value)}
                 >
-                    <option>Inherited</option>
-                    <hr />
-                    <option>Visible</option>
-                    <option>Hidden</option>
-                </select>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Visibility" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                            <SelectItem value="Inherited">
+                                <Lucide.CornerLeftUp />
+                                Inherited
+                            </SelectItem>
+                            <SelectSeparator />
+                            <SelectItem value="Visible">
+                                <Lucide.Eye />
+                                Visible
+                            </SelectItem>
+                            <SelectItem value="Hidden">
+                                <Lucide.EyeOff />
+                                Hidden
+                            </SelectItem>
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
                 <HStack></HStack>
             </VStack>
         </div>
