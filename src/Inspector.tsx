@@ -71,8 +71,24 @@ export function ComponentInspector({
         case "bevy_render::view::visibility::InheritedVisibility":
         case "bevy_render::view::visibility::ViewVisibility":
         case "bevy_transform::components::global_transform::GlobalTransform":
+        case "bevy_render::primitives::CascadesFrusta":
+        case "bevy_pbr::light::Cascades":
+        case "bevy_pbr::bundle::CascadesVisibleEntities":
+        case "bevy_ui::measurement::ContentSize":
+        case "bevy_ui::widget::text::TextFlags":
+        case "bevy_text::pipeline::TextLayoutInfo":
+        case "bevy_ui::ui_node::Node":
+        case "bevy_window::window::Window":
+        case "bevy_render::camera::camera::Camera":
+        case "bevy_render::view::visibility::VisibleEntities":
+            context = "code";
             Icon = Lucide.ArrowBigRightDash;
             label = "Computed";
+            break;
+        case "bevy_window::window::PrimaryWindow":
+            context = "code";
+            Icon = Lucide.Tag;
+            label = "Marker";
             break;
         case "bevy_render::view::visibility::Visibility":
             Icon = Lucide.Eye;
