@@ -78,6 +78,8 @@ export function ComponentInspector({
         component,
     );
 
+    const prettyName = prettifyName(name);
+
     return (
         <div className="ComponentInspector">
             <div className="Heading">
@@ -89,7 +91,7 @@ export function ComponentInspector({
                 >
                     <Icon />
                 </div>
-                {name}
+                <span title={name}>{prettyName}</span>
                 {label && <i style={{ color: "var(--accent)" }}>{label}</i>}
             </div>
             {ComponentEditor && (
@@ -125,7 +127,6 @@ interface ComponentEditorProps {
 
 function getComponentSortingPriority(name: string, component: any) {
     const { label } = getComponentInfo(name, component);
-    console.log(name, label);
 
     if (label === "Marker") {
         return -10;
@@ -157,7 +158,12 @@ function getComponentInfo(name: string, component: any) {
 
     switch (name) {
         case "bevy_hierarchy::components::children::Children":
+            Icon = Lucide.ListTree;
+            label = "Hierarchy";
+            break;
         case "bevy_hierarchy::components::parent::Parent":
+            Icon = Lucide.CornerLeftUp;
+            label = "Hierarchy";
             break;
         case "bevy_render::view::visibility::InheritedVisibility":
         case "bevy_render::view::visibility::ViewVisibility":
@@ -173,12 +179,15 @@ function getComponentInfo(name: string, component: any) {
         case "bevy_render::camera::camera::Camera":
         case "bevy_render::view::visibility::VisibleEntities":
         case "bevy_render::primitives::Frustum":
+        case "bevy_render::primitives::Aabb":
             context = "code";
             Icon = Lucide.ArrowBigRightDash;
             label = "Computed";
             break;
         case "bevy_window::window::PrimaryWindow":
-            context = "code";
+        case "bevy_pbr::light::NotShadowCaster":
+        case "bevy_pbr::light::NotShadowReceiver":
+        case "bevy_pbr::light::TransmittedShadowReceiver":
             Icon = Lucide.Tag;
             label = "Marker";
             break;
@@ -440,4 +449,8 @@ function VisibilityComponentEditor(props: ComponentEditorProps) {
             </VStack>
         </div>
     );
+}
+
+function prettifyName(name: string) {
+    return name.replace(/([a-z][a-z0-9_]+::)/g, "");
 }
