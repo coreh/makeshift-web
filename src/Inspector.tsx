@@ -439,42 +439,61 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
     }
 }
 
-function VisibilityComponentEditor(props: ComponentEditorProps) {
-    const globalStore = useGlobalStore();
-    const entity = globalStore.selection.first();
+const VisibilityComponentEditor = makeMultipleChoiceComponentEditor(
+    "Visibility",
+    [
+        { value: "Inherited", Icon: Lucide.CornerLeftUp },
+        { value: "Visible", Icon: Lucide.Eye },
+        { value: "Hidden", Icon: Lucide.EyeOff },
+    ],
+);
 
-    return (
-        <div className="ComponentEditor">
-            <VStack>
-                <Select
-                    value={props.component}
-                    onValueChange={(value) => props.onSave(props.name, value)}
-                >
-                    <SelectTrigger>
-                        <SelectValue placeholder="Visibility" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            <SelectItem value="Inherited">
-                                <Lucide.CornerLeftUp />
-                                Inherited
-                            </SelectItem>
-                            <SelectSeparator />
-                            <SelectItem value="Visible">
-                                <Lucide.Eye />
-                                Visible
-                            </SelectItem>
-                            <SelectItem value="Hidden">
-                                <Lucide.EyeOff />
-                                Hidden
-                            </SelectItem>
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
-                <HStack></HStack>
-            </VStack>
-        </div>
-    );
+function makeMultipleChoiceComponentEditor(
+    placeholder: string,
+    options: { value: string; label?: string; Icon?: React.FC<{}> }[],
+): React.FC<ComponentEditorProps> {
+    return function MultipleChoiceComponentEditor(props: ComponentEditorProps) {
+        const { name, component, onSave } = props;
+        const globalStore = useGlobalStore();
+        const entity = globalStore.selection.first();
+
+        const [componentValue, setComponentValue] = useState(component);
+
+        useEffect(() => {
+            setComponentValue(component);
+        }, [entity, component]);
+
+        return (
+            <div className="ComponentEditor">
+                <VStack>
+                    <Select
+                        value={componentValue}
+                        onValueChange={(value) => {
+                            setComponentValue(value); // So that the UI updates immediately
+                            onSave(name, value);
+                        }}
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder={placeholder} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                {options.map(({ value, label, Icon }) => {
+                                    return (
+                                        <SelectItem key={value} value={value}>
+                                            {Icon && <Icon />}
+                                            {label ?? value}
+                                        </SelectItem>
+                                    );
+                                })}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                    <HStack></HStack>
+                </VStack>
+            </div>
+        );
+    };
 }
 
 function prettifyName(name: string) {
