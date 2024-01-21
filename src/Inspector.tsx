@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { createElement, useEffect, useRef, useState } from "react";
 import { useGlobalStore } from "./store";
 import useSWR from "swr";
 import { Unserializable, deserialize, serialize } from "./utils";
@@ -35,7 +35,7 @@ export function Inspector() {
                   },
               }
             : null,
-        { keepPreviousData: true, refreshInterval: 100 },
+        { keepPreviousData: true },
     );
 
     const components = data?.content?.entity?.components;
@@ -135,7 +135,7 @@ interface ComponentEditorProps {
 }
 
 function getComponentSortingPriority(name: string, component: any) {
-    const { label } = getComponentInfo(name, component);
+    const { label, ComponentEditor } = getComponentInfo(name, component);
 
     if (label === "Marker") {
         return -10;
@@ -147,6 +147,10 @@ function getComponentSortingPriority(name: string, component: any) {
 
     if (label === "Computed") {
         return 20;
+    }
+
+    if (ComponentEditor === GenericComponentEditor) {
+        return 30;
     }
 
     switch (name) {
@@ -203,6 +207,18 @@ function getComponentInfo(name: string, component: any) {
         case "bevy_render::view::visibility::Visibility":
             Icon = Lucide.Eye;
             ComponentEditor = VisibilityComponentEditor;
+            break;
+        case "bevy_ui::focus::FocusPolicy":
+            Icon = Lucide.Focus;
+            ComponentEditor = FocusPolicyComponentEditor;
+            break;
+        case "bevy_core_pipeline::tonemapping::DebandDither":
+            Icon = Lucide.Grip;
+            ComponentEditor = DebandDitherComponentEditor;
+            break;
+        case "bevy_core_pipeline::tonemapping::Tonemapping":
+            Icon = Lucide.Blend;
+            ComponentEditor = TonemappingComponentEditor;
             break;
         case "bevy_transform::components::transform::Transform":
             Icon = Lucide.Move3D;
@@ -439,6 +455,76 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
     }
 }
 
+const FocusPolicyComponentEditor = makeMultipleChoiceComponentEditor(
+    "Focus Policy",
+    [
+        {
+            value: "Pass",
+            Icon: Lucide.LogIn,
+            label: () => (
+                <dl>
+                    <dt>Pass</dt>
+                    <dd>Lets interaction pass through to child nodes</dd>
+                </dl>
+            ),
+        },
+        {
+            value: "Block",
+            Icon: Lucide.Ban,
+            label: () => (
+                <dl>
+                    <dt>Block</dt>
+                    <dd>Blocks interaction with child nodes</dd>
+                </dl>
+            ),
+        },
+    ],
+);
+
+const DebandDitherComponentEditor = makeMultipleChoiceComponentEditor(
+    "Deband Dither",
+    [
+        {
+            value: "Enabled",
+            Icon: () => (
+                <img
+                    className="Thumbnail"
+                    width={30}
+                    src="/images/debanddither_enabled.png"
+                />
+            ),
+            label: () => (
+                <dl>
+                    <dt>Enabled</dt>
+                    <dd>
+                        Applies dithering to mitigate color banding in the final
+                        image
+                    </dd>
+                </dl>
+            ),
+        },
+        {
+            value: "Disabled",
+            Icon: () => (
+                <img
+                    className="Thumbnail"
+                    width={30}
+                    src="/images/debanddither_disabled.png"
+                />
+            ),
+            label: () => (
+                <dl>
+                    <dt>Disabled</dt>
+                    <dd>
+                        Keep colors as they are, but risk color banding in the
+                        final image
+                    </dd>
+                </dl>
+            ),
+        },
+    ],
+);
+
 const VisibilityComponentEditor = makeMultipleChoiceComponentEditor(
     "Visibility",
     [
@@ -448,9 +534,153 @@ const VisibilityComponentEditor = makeMultipleChoiceComponentEditor(
     ],
 );
 
+const TonemappingComponentEditor = makeMultipleChoiceComponentEditor(
+    "Tonemapping",
+    [
+        {
+            value: "None",
+            label: () => (
+                <dl>
+                    <dt>None</dt>
+                    <dd>Disables tonemapping. Not Recommended.</dd>
+                </dl>
+            ),
+            Icon: () => <img className="Thumbnail" src="/images/tm_none.png" />,
+        },
+        {
+            value: "Reinhard",
+            label: () => (
+                <dl>
+                    <dt>Reinhard</dt>
+                    <dd>
+                        Suffers from lots hue shifting, brights don't desaturate
+                        naturally. Bright primaries and secondaries don't
+                        desaturate at all.
+                    </dd>
+                </dl>
+            ),
+            Icon: () => (
+                <img className="Thumbnail" src="/images/tm_reinhard.png" />
+            ),
+        },
+        {
+            value: "ReinhardLuminance",
+            label: () => (
+                <dl>
+                    <dt>Reinhard Luminance</dt>
+                    <dd>
+                        Suffers from hue shifting. Brights don't desaturate much
+                        at all across the spectrum.
+                    </dd>
+                </dl>
+            ),
+            Icon: () => (
+                <img
+                    className="Thumbnail"
+                    src="/images/tm_reinhard_luminance.png"
+                />
+            ),
+        },
+        {
+            value: "AcesFitted",
+            label: () => (
+                <dl>
+                    <dt>ACES Fitted</dt>
+                    <dd>
+                        Not neutral, has a very specific aesthetic, intentional
+                        and dramatic hue shifting. Bright greens and reds turn
+                        orange. Bright blues turn magenta. Significantly
+                        increased contrast. Brights desaturate across the
+                        spectrum.
+                    </dd>
+                </dl>
+            ),
+            Icon: () => <img className="Thumbnail" src="/images/tm_aces.png" />,
+        },
+        {
+            value: "AgX",
+            label: () => (
+                <dl>
+                    <dt>AgX</dt>
+                    <dd>
+                        Very neutral. Image is somewhat desaturated when
+                        compared to other tonemappers. Little to no hue
+                        shifting. Subtle{" "}
+                        <a
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onPointerUp={(e) => e.stopPropagation()}
+                            target="_blank"
+                            href="https://en.wikipedia.org/wiki/Abney_effect"
+                        >
+                            Abney shifting
+                        </a>
+                        .
+                    </dd>
+                </dl>
+            ),
+            Icon: () => <img className="Thumbnail" src="/images/tm_agx.png" />,
+        },
+        {
+            value: "SomewhatBoringDisplayTransform",
+            label: () => (
+                <dl>
+                    <dt>Somewhat Boring Display Transform</dt>
+                    <dd>
+                        Has little hue shifting in the darks and mids, but lots
+                        in the brights. Brights desaturate across the spectrum.
+                        Is sort of between Reinhard and ReinhardLuminance.
+                        Conceptually similar to reinhard-jodie. Designed as a
+                        compromise if you want e.g. decent skin tones in low
+                        light, but can't afford to re-do your VFX to look good
+                        without hue shifting.
+                    </dd>
+                </dl>
+            ),
+            Icon: () => <img className="Thumbnail" src="/images/tm_sbdt.png" />,
+        },
+        {
+            value: "TonyMcMapface",
+            label: () => (
+                <dl>
+                    <dt>Tony McMapface</dt>
+                    <dd>
+                        Very neutral. Subtle but intentional hue shifting.
+                        Brights desaturate across the spectrum.
+                    </dd>
+                </dl>
+            ),
+            Icon: () => (
+                <img className="Thumbnail" src="/images/tm_tonymcmapface.png" />
+            ),
+        },
+        {
+            value: "BlenderFilmic",
+            label: () => (
+                <dl>
+                    <dt>Blender Filmic</dt>
+                    <dd>
+                        Somewhat neutral. Suffers from hue shifting. Brights
+                        desaturate across the spectrum.
+                    </dd>
+                </dl>
+            ),
+            Icon: () => (
+                <img
+                    className="Thumbnail"
+                    src="/images/tm_blender_filmic.png"
+                />
+            ),
+        },
+    ],
+);
+
 function makeMultipleChoiceComponentEditor(
     placeholder: string,
-    options: { value: string; label?: string; Icon?: React.FC<{}> }[],
+    options: {
+        value: string;
+        label?: string | React.FC<{}>;
+        Icon?: React.FC<{}>;
+    }[],
 ): React.FC<ComponentEditorProps> {
     return function MultipleChoiceComponentEditor(props: ComponentEditorProps) {
         const { name, component, onSave } = props;
@@ -482,7 +712,11 @@ function makeMultipleChoiceComponentEditor(
                                     return (
                                         <SelectItem key={value} value={value}>
                                             {Icon && <Icon />}
-                                            {label ?? value}
+                                            {label
+                                                ? typeof label === "string"
+                                                    ? label
+                                                    : createElement(label)
+                                                : value}
                                         </SelectItem>
                                     );
                                 })}

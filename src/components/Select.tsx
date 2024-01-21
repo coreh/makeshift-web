@@ -37,7 +37,7 @@ export const SelectScrollUpButton = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <SelectPrimitive.ScrollUpButton
         ref={ref}
-        className={cn("ScrollButton", className)}
+        className={cn("ScrollButton Up", className)}
         {...props}
     >
         <Lucide.ChevronUp />
@@ -51,7 +51,7 @@ export const SelectScrollDownButton = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <SelectPrimitive.ScrollDownButton
         ref={ref}
-        className={cn("ScrollButton", className)}
+        className={cn("ScrollButton Down", className)}
         {...props}
     >
         <Lucide.ChevronDown />

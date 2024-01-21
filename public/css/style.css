@@ -47,7 +47,7 @@
 
     --shadow-low: 0 1px 0 rgba(0, 0, 0, 0.2);
     --shadow-medium: 0 2px 2px rgba(0, 0, 0, 0.2);
-    --shadow-high: 0 4px 4px rgba(0, 0, 0, 0.2);
+    --shadow-high: 0 4px 4px rgba(0, 0, 0, 0.4);
 
     font-size: 12px;
     color-scheme: dark;
@@ -590,6 +590,7 @@ svg.lucide {
 
     & > span {
         display: flex;
+        align-items: center;
         gap: var(--control-gap);
     }
 }
@@ -601,6 +602,22 @@ svg.lucide {
     justify-content: center;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
+    position: absolute;
+    background: var(--surface-minus-1);
+
+    &.Up {
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--control-height);
+    }
+
+    &.Down {
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: var(--control-height);
+    }
 }
 
 .SelectContent {
@@ -610,9 +627,10 @@ svg.lucide {
     min-width: 8rem;
     overflow: hidden;
     border-radius: var(--control-radius);
-    background-color: var(--surface-minus-2);
+    border: 1px solid var(--surface-0);
+    background-color: var(--surface-minus-1);
     color: var(--text-popover-foreground);
-    box-shadow: var(--shadow-medium);
+    box-shadow: var(--shadow-high);
     &[data-state="open"] {
         animation: fadeIn 0.1s ease-out;
     }
@@ -685,6 +703,7 @@ svg.lucide {
 
     & > * {
         display: flex;
+        align-items: center;
         gap: var(--control-gap);
     }
 
@@ -814,4 +833,35 @@ svg.lucide {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+.Thumbnail {
+    max-width: calc(var(--control-height) * 2.5);
+    object-fit: contain;
+    border-radius: var(--control-radius);
+}
+
+dl {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--control-gap) / 2);
+    text-align: left;
+    margin: 0;
+}
+
+dd {
+    text-indent: 0;
+    margin: 0;
+    padding: 0;
+    font-style: italic;
+    opacity: 0.5;
+    max-width: 25rem;
+}
+
+.SelectTrigger dd {
+    display: none;
+}
+
+a {
+    color: inherit;
 }
