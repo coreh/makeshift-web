@@ -58,7 +58,7 @@ interface EntityTreeNodeProps {
 function EntityTreeNode({ entity }: EntityTreeNodeProps) {
     const parent = entity.entity;
 
-    let name: string | undefined = deserialize(entity.optional.Name)?.name;
+    let name: string | undefined = deserialize(entity.optional.Name);
     const [isOpen, setIsOpen] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
