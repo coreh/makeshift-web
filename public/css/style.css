@@ -154,7 +154,7 @@ input[type="number"] {
     &.primary {
         background-color: var(--accent);
         color: var(--contrast);
-        font-weight: 600;
+        font-weight: 500;
     }
 
     &:not(:disabled):hover {
@@ -166,8 +166,17 @@ input[type="number"] {
     }
 
     &:disabled {
-        background-color: color-mix(in srgb, var(--accent) 10%, transparent);
-        color: color-mix(in srgb, var(--accent) 60%, transparent);
+        background-color: color-mix(in srgb, var(--surface-0) 60%, transparent);
+        color: color-mix(in srgb, var(--surface-0-contrast) 60%, transparent);
+
+        &:disabled {
+            background-color: color-mix(
+                in srgb,
+                var(--accent) 10%,
+                transparent
+            );
+            color: color-mix(in srgb, var(--contrast) 60%, transparent);
+        }
     }
 
     &:focus {
