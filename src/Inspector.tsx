@@ -3,13 +3,13 @@ import { useGlobalStore } from "./store";
 import useSWR from "swr";
 import { Unserializable, deserialize, serialize } from "./utils";
 import { fetcher } from ".";
-import { Button } from "./components/Button";
-import { VStack } from "./components/VStack";
-import { HStack } from "./components/HStack";
+import { Button } from "./components/ui/Button";
+import { VStack } from "./components/ui/VStack";
+import { HStack } from "./components/ui/HStack";
 import cn from "classnames";
 import * as Lucide from "lucide-react";
-import { TextInput } from "./components/Input";
-import { Trackball } from "./components/Trackball";
+import { TextInput } from "./components/ui/Input";
+import { Trackball } from "./components/ui/Trackball";
 import {
     Select,
     SelectContent,
@@ -18,7 +18,7 @@ import {
     SelectSeparator,
     SelectTrigger,
     SelectValue,
-} from "./components/Select";
+} from "./components/ui/Select";
 
 export function Inspector() {
     const globalStore = useGlobalStore();

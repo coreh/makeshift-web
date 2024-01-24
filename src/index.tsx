@@ -2,13 +2,13 @@ import React, { useRef } from "react";
 import ReactDOM from "react-dom/client";
 import useSWR, { SWRConfig } from "swr";
 
-import { Status } from "./components/Status";
+import { Status } from "./components/ui/Status";
 import { EntityTree } from "./EntityTree";
 import { Inspector } from "./Inspector";
-import { VStack } from "./components/VStack";
-import { Panel } from "./components/Panel";
-import { HStack } from "./components/HStack";
-import { Toolbar } from "./components/Toolbar";
+import { VStack } from "./components/ui/VStack";
+import { Panel } from "./components/ui/Panel";
+import { HStack } from "./components/ui/HStack";
+import { Toolbar } from "./components/ui/Toolbar";
 
 export async function fetcher(obj: any) {
     const res = await fetch("http://localhost:8765/brp", {

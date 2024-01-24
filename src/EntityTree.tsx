@@ -6,9 +6,9 @@ import {
     TreeChevron,
     TreeContent,
     TreeHeading,
-} from "./components/Collapsible";
+} from "./components/ui/Collapsible";
 import * as Lucide from "lucide-react";
-import { UIContext } from "./components/common";
+import { UIContext } from "./components/ui/common";
 import { useGlobalStore } from "./store";
 import { deserialize, serialize } from "./utils";
 
