@@ -1,7 +1,7 @@
 import React from "react";
 
 export type TopicName =
-    | "primary"
+    | "none"
     | "error-danger"
     | "warning"
     | "success"
@@ -9,14 +9,16 @@ export type TopicName =
     | "resource"
     | "asset"
     | "code"
-    | "none";
+    | "x"
+    | "y"
+    | "z";
 
 interface TopicProps {
     children: React.ReactNode;
-    name: TopicName;
+    topic: TopicName;
 }
 
 export function Topic(props: TopicProps) {
-    const { children, name } = props;
-    return <div className={`topic:${name}`}>{children}</div>;
+    const { children, topic: name } = props;
+    return <div className={`Topic topic:${name}`}>{children}</div>;
 }

@@ -11,7 +11,9 @@
     --surface-plus-1-contrast: #fff;
     --surface-plus-2-contrast: #000;
 
-    --accent-primary: #799bbb;
+    --highlight: #799bbb;
+    --highlight-contrast: #fff;
+
     --accent-error-danger: #cc3b40;
     --accent-warning: #f8a34e;
     --accent-success: #3bb273;
@@ -23,7 +25,6 @@
     --accent-y: #6f9b1f;
     --accent-z: #2f84e3;
 
-    --accent-primary-contrast: #fff;
     --accent-error-danger-contrast: #fff;
     --accent-warning-contrast: #000;
     --accent-success-contrast: #000;
@@ -59,6 +60,11 @@
     font-family: system-ui;
 }
 
+*::selection {
+    background-color: var(--highlight);
+    color: var(--highlight-contrast);
+}
+
 body {
     margin: 0;
     background: var(--surface-0);
@@ -82,9 +88,8 @@ input[type="number"] {
     resize: none;
 }
 
-.topic\:primary {
-    --accent: var(--accent-primary);
-    --contrast: var(--accent-primary-contrast);
+.Topic {
+    display: contents;
 }
 
 .topic\:error-danger {
@@ -143,13 +148,13 @@ input[type="number"] {
     padding-right: var(--control-padding-x);
     box-shadow: var(--shadow-low);
     text-shadow: var(--shadow-low);
-    background-color: var(--accent);
-    color: var(--contrast);
+    background-color: var(--surface-0);
+    color: var(--surface-0-contrast);
 
-    /* special case buttons without topic to be a bit darker */
-    &:not([class*="topic:"]) {
-        background-color: var(--surface-0);
-        color: var(--surface-0-contrast);
+    &.primary {
+        background-color: var(--accent);
+        color: var(--contrast);
+        font-weight: 600;
     }
 
     &:not(:disabled):hover {
@@ -166,7 +171,7 @@ input[type="number"] {
     }
 
     &:focus {
-        outline: 2px solid color-mix(in srgb, var(--accent) 80%, transparent);
+        outline: 2px solid color-mix(in srgb, var(--highlight) 80%, transparent);
         outline-offset: 1px;
     }
 }
@@ -454,7 +459,7 @@ svg.lucide {
 
         &:focus {
             outline: 2px solid
-                color-mix(in srgb, var(--accent) 80%, transparent);
+                color-mix(in srgb, var(--highlight) 80%, transparent);
         }
     }
 
@@ -489,7 +494,7 @@ svg.lucide {
 
         &:focus {
             outline: 2px solid
-                color-mix(in srgb, var(--accent) 80%, transparent);
+                color-mix(in srgb, var(--highlight) 80%, transparent);
         }
     }
 
@@ -583,7 +588,7 @@ svg.lucide {
     color: var(--accent);
 
     &:focus {
-        outline: 2px solid color-mix(in srgb, var(--accent) 80%, transparent);
+        outline: 2px solid color-mix(in srgb, var(--highlight) 80%, transparent);
         outline-offset: 1px;
     }
 

@@ -230,7 +230,6 @@ function getComponentInfo(name: string, component: any) {
                 Icon = Lucide.Binary;
                 label = "Unserializable";
             } else {
-                topic = "primary";
                 ComponentEditor = GenericComponentEditor;
             }
             break;
@@ -265,7 +264,7 @@ export function GenericComponentEditor(props: ComponentEditorProps) {
                         Revert
                     </Button>
                     <Button
-                        topic="primary"
+                        primary
                         onClick={() =>
                             props.onSave(props.name, JSON.parse(text))
                         }
