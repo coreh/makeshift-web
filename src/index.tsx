@@ -39,11 +39,11 @@ function Ping() {
 function App() {
     return (
         <SWRConfig value={{ fetcher }}>
-            <VStack grow>
+            <VStack grow={1}>
                 <Toolbar>
                     <Ping />
                 </Toolbar>
-                <HStack grow>
+                <HStack grow={1}>
                     <Panel>
                         <EntityTree />
                     </Panel>

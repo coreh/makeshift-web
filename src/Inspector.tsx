@@ -370,7 +370,7 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
     return (
         <div className="ComponentEditor">
             <HStack>
-                <VStack grow>
+                <VStack grow={1}>
                     <label>Translation</label>
                     <TextInput
                         label="X"
@@ -388,7 +388,7 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
                         onSave={(value) => handleChange(value, setZ)}
                     />
                 </VStack>
-                <VStack grow>
+                <VStack grow={1}>
                     <label>Scale</label>
                     <TextInput
                         label="SX"
@@ -410,7 +410,7 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
             <VStack>
                 <label>Rotation</label>
                 <HStack>
-                    <VStack grow>
+                    <VStack grow={1}>
                         <TextInput
                             label="RX"
                             value={rx}
