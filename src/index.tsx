@@ -5,9 +5,9 @@ import useSWR, { SWRConfig } from "swr";
 import { Status } from "./components/ui/Status";
 import { EntityTree } from "./EntityTree";
 import { Inspector } from "./Inspector";
-import { VStack } from "./components/ui/VStack";
+import { VStack } from "./components/layout/VStack";
 import { Panel } from "./components/ui/Panel";
-import { HStack } from "./components/ui/HStack";
+import { HStack } from "./components/layout/HStack";
 import { Toolbar } from "./components/ui/Toolbar";
 
 export async function fetcher(obj: any) {
