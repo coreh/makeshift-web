@@ -433,6 +433,11 @@ svg.lucide {
         max-width: 50%;
     }
 
+    &:focus-within {
+        outline: 2px solid color-mix(in srgb, var(--highlight) 80%, transparent);
+        outline-offset: 1px;
+    }
+
     input {
         display: flex;
         text-align: end;
