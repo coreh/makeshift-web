@@ -1,18 +1,18 @@
 import React from "react";
-import { UIContext } from "./common";
+import { TopicName } from "./common";
 import cn from "classnames";
 
 interface StatusProps {
     className?: string;
-    context: UIContext;
+    topic: TopicName;
     value: string;
 }
 
-export function Status({ context, className, value }: StatusProps) {
+export function Status({ topic, className, value }: StatusProps) {
     return (
         <div
             role="status"
-            className={cn("Status", context && `context:${context}`, className)}
+            className={cn("Status", topic && `topic:${topic}`, className)}
         >
             {value}
         </div>

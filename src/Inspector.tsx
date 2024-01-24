@@ -82,7 +82,7 @@ export function ComponentInspector({
 }: ComponentInspectorProps) {
     const globalStore = useGlobalStore();
 
-    const { context, Icon, label, ComponentEditor } = getComponentInfo(
+    const { topic, Icon, label, ComponentEditor } = getComponentInfo(
         name,
         component,
     );
@@ -95,7 +95,7 @@ export function ComponentInspector({
                 <div
                     className={cn(
                         "EntityIcon",
-                        context != null && `context:${context}`,
+                        topic != null && `topic:${topic}`,
                     )}
                 >
                     <Icon />
@@ -164,7 +164,7 @@ function getComponentSortingPriority(name: string, component: any) {
 }
 
 function getComponentInfo(name: string, component: any) {
-    let context;
+    let topic;
     let label;
     let Icon: React.FC<{}> = Lucide.ToyBrick;
     let ComponentEditor: React.FC<ComponentEditorProps> | undefined;
@@ -193,7 +193,7 @@ function getComponentInfo(name: string, component: any) {
         case "bevy_render::view::visibility::VisibleEntities":
         case "bevy_render::primitives::Frustum":
         case "bevy_render::primitives::Aabb":
-            context = "code";
+            topic = "code";
             Icon = Lucide.ArrowBigRightDash;
             label = "Computed";
             break;
@@ -226,18 +226,18 @@ function getComponentInfo(name: string, component: any) {
             break;
         default:
             if (component === Unserializable) {
-                context = "code";
+                topic = "code";
                 Icon = Lucide.Binary;
                 label = "Unserializable";
             } else {
-                context = "primary";
+                topic = "primary";
                 ComponentEditor = GenericComponentEditor;
             }
             break;
     }
 
     return {
-        context,
+        topic,
         label,
         Icon,
         ComponentEditor,
@@ -265,7 +265,7 @@ export function GenericComponentEditor(props: ComponentEditorProps) {
                         Revert
                     </Button>
                     <Button
-                        context="primary"
+                        topic="primary"
                         onClick={() =>
                             props.onSave(props.name, JSON.parse(text))
                         }
@@ -281,7 +281,7 @@ export function GenericComponentEditor(props: ComponentEditorProps) {
 
 export function UnserializableComponentEditor(props: ComponentEditorProps) {
     return (
-        <div className="ComponentEditor context:warning">
+        <div className="ComponentEditor topic:warning">
             <Lucide.PlugZap />
             Unserializable
         </div>

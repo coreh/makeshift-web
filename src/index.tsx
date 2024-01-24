@@ -31,9 +31,9 @@ function Ping() {
         { refreshInterval: 1000, errorRetryInterval: 1000 },
     );
 
-    if (error) return <Status context="error-danger" value="Not Connected" />;
-    if (isLoading) return <Status context="error-danger" value="Connecting" />;
-    return <Status context="success" value="Connected" />;
+    if (error) return <Status topic="error-danger" value="Not Connected" />;
+    if (isLoading) return <Status topic="error-danger" value="Connecting" />;
+    return <Status topic="success" value="Connected" />;
 }
 
 function App() {

@@ -8,7 +8,7 @@ import {
     TreeHeading,
 } from "./components/ui/Collapsible";
 import * as Lucide from "lucide-react";
-import { UIContext } from "./components/ui/common";
+import { TopicName } from "./components/ui/common";
 import { useGlobalStore } from "./store";
 import { deserialize, serialize } from "./utils";
 
@@ -152,7 +152,7 @@ function EntityTreeNode({ entity }: EntityTreeNodeProps) {
                 )}
                 {!data && error && (
                     <Lucide.PlugZap
-                        className="context:error-danger"
+                        className="topic:error-danger"
                         style={{ color: "var(--accent)" }}
                     />
                 )}
@@ -176,20 +176,20 @@ interface IconProps {
 
 function EntityIcon({ has }: IconProps) {
     let icon;
-    let context: UIContext | undefined = undefined;
+    let topic: TopicName | undefined = undefined;
     if (has.PointLight) {
         icon = <Lucide.Lightbulb />;
-        context = "light";
+        topic = "light";
     } else if (has.SpotLight) {
         icon = <Lucide.LampDesk />;
-        context = "light";
+        topic = "light";
     } else if (has.DirectionalLight) {
         icon = <Lucide.Sunset />;
-        context = "light";
+        topic = "light";
     } else if (has.Camera) {
         icon = <Lucide.Video />;
     } else if (has["Handle<Mesh>"]) {
-        context = "asset";
+        topic = "asset";
         icon = <Lucide.Box />;
     } else if (has["Window"]) {
         icon = <Lucide.AppWindow />;
@@ -198,19 +198,14 @@ function EntityIcon({ has }: IconProps) {
     } else if (has["Node"]) {
         icon = <Lucide.MousePointerSquareDashed />;
     } else if (has["Handle<Scene>"]) {
-        context = "asset";
+        topic = "asset";
         icon = <Lucide.Shapes />;
     } else {
         icon = <Lucide.CircleDashed />;
     }
 
     return (
-        <div
-            className={cn(
-                "EntityIcon",
-                context != null && `context:${context}`,
-            )}
-        >
+        <div className={cn("EntityIcon", topic != null && `topic:${topic}`)}>
             {icon}
         </div>
     );

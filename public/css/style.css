@@ -82,47 +82,47 @@ input[type="number"] {
     resize: none;
 }
 
-.context\:primary {
+.topic\:primary {
     --accent: var(--accent-primary);
     --contrast: var(--accent-primary-contrast);
 }
 
-.context\:error-danger {
+.topic\:error-danger {
     --accent: var(--accent-error-danger);
     --contrast: var(--accent-error-danger-contrast);
 }
 
-.context\:warning {
+.topic\:warning {
     --accent: var(--accent-warning);
     --contrast: var(--accent-warning-contrast);
 }
 
-.context\:success {
+.topic\:success {
     --accent: var(--accent-success);
     --contrast: var(--accent-success-contrast);
 }
 
-.context\:light {
+.topic\:light {
     --accent: var(--accent-light);
     --contrast: var(--accent-light-contrast);
 }
 
-.context\:resource {
+.topic\:resource {
     --accent: var(--accent-resource);
     --contrast: var(--accent-resource-contrast);
 }
 
-.context\:asset {
+.topic\:asset {
     --accent: var(--accent-asset);
     --contrast: var(--accent-asset-contrast);
 }
 
-.context\:code {
+.topic\:code {
     --accent: var(--accent-code);
     --contrast: var(--accent-code-contrast);
 }
 
-.context\:none {
+.topic\:none {
     --accent: var(--surface-plus-1);
     --contrast: var(--surface-plus-1-contrast);
 }
@@ -146,8 +146,8 @@ input[type="number"] {
     background-color: var(--accent);
     color: var(--contrast);
 
-    /* special case buttons without context to be a bit darker */
-    &:not([class*="context:"]) {
+    /* special case buttons without topic to be a bit darker */
+    &:not([class*="topic:"]) {
         background-color: var(--surface-0);
         color: var(--surface-0-contrast);
     }
@@ -186,6 +186,14 @@ input[type="number"] {
 
     &.gap {
         gap: var(--control-gap);
+    }
+}
+
+.ZStack {
+    display: grid;
+
+    & > * {
+        grid-area: 1 / 1 / 1 / 1;
     }
 }
 
