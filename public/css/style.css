@@ -597,13 +597,13 @@ svg.lucide {
     background-color: var(--surface-minus-2);
 
     padding-left: 0.75rem;
-    padding-right: 0.75rem;
+    padding-right: 0.25rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
 
     font-size: 0.875rem;
 
-    color: var(--accent);
+    color: var(--surface-minus-1-contrast);
 
     &:focus {
         outline: 2px solid color-mix(in srgb, var(--highlight) 80%, transparent);
