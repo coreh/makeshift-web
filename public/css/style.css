@@ -394,6 +394,8 @@ svg.lucide {
 }
 
 .ComponentEditor {
+    display: contents;
+
     textarea {
         background-color: var(--surface-minus-2);
         font-family: monospace;
@@ -403,7 +405,7 @@ svg.lucide {
         height: calc(var(--control-height) * 4);
     }
 
-    label {
+    & > label {
         font-size: 0.8rem;
         display: flex;
         color: var(--accent);
@@ -431,6 +433,8 @@ svg.lucide {
         flex-grow: 0;
         flex-basis: content;
         max-width: 50%;
+        text-transform: capitalize;
+        white-space: nowrap;
     }
 
     &:focus-within {
@@ -887,4 +891,58 @@ dd {
 
 a {
     color: inherit;
+}
+
+.Checkbox {
+    display: flex;
+    appearance: none;
+    padding: 0;
+    border: none;
+    background: none;
+    height: var(--control-height);
+    gap: var(--control-gap);
+    align-items: center;
+    padding-left: var(--control-indent);
+
+    .CheckArea {
+        display: flex;
+        flex-grow: 0;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        width: calc(var(--control-height));
+        height: calc(var(--control-height));
+        background-color: var(--surface-minus-2);
+        border-radius: var(--control-radius);
+        color: var(--surface-0-contrast);
+
+        .Indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    &:focus {
+        outline: none;
+
+        .CheckArea {
+            outline: 2px solid
+                color-mix(in srgb, var(--highlight) 80%, transparent);
+            outline-offset: 1px;
+        }
+    }
+
+    label {
+        display: flex;
+        flex-basis: 0;
+        flex-grow: 1;
+        font-size: 0.8rem;
+        justify-content: end;
+        color: var(--surface-minus-2-contrast);
+        text-align: right;
+        text-transform: capitalize;
+    }
 }

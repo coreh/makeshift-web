@@ -1,4 +1,10 @@
-import React, { createElement, useEffect, useRef, useState } from "react";
+import React, {
+    createElement,
+    useEffect,
+    useId,
+    useRef,
+    useState,
+} from "react";
 import { useGlobalStore } from "./store";
 import useSWR from "swr";
 import { Unserializable, deserialize, serialize } from "./utils";
@@ -19,6 +25,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "./components/ui/Select";
+import { Checkbox } from "./components/ui/Checkbox";
 
 export function Inspector() {
     const globalStore = useGlobalStore();
@@ -223,6 +230,11 @@ function getComponentInfo(name: string, component: any) {
         case "bevy_transform::components::transform::Transform":
             Icon = Lucide.Move3D;
             ComponentEditor = TransformComponentEditor;
+            break;
+        case "bevy_pbr::light::PointLight":
+            topic = "light";
+            Icon = Lucide.Lightbulb;
+            ComponentEditor = PointLightComponentEditor;
             break;
         default:
             if (component === Unserializable) {
@@ -673,6 +685,77 @@ const TonemappingComponentEditor = makeMultipleChoiceComponentEditor(
     ],
 );
 
+function BooleanComponentEditor(props: ComponentEditorProps) {
+    const globalStore = useGlobalStore();
+    const entity = globalStore.selection.first();
+    const [value, setValue] = useState(false);
+
+    useEffect(() => {
+        setValue(props.component);
+    }, [entity, props.component]);
+
+    return (
+        <div className="ComponentEditor">
+            <Checkbox
+                label={prettifyName(props.name)}
+                checked={value}
+                onChange={(checked) => {
+                    props.onSave(props.name, checked);
+                    setValue(checked);
+                }}
+            />
+        </div>
+    );
+}
+
+function NumberComponentEditor(props: ComponentEditorProps) {
+    const globalStore = useGlobalStore();
+    const entity = globalStore.selection.first();
+    const [value, setValue] = useState("");
+    const userInteraction = useRef(false);
+
+    useEffect(() => {
+        setValue(`${props.component}`);
+    }, [entity, props.component]);
+
+    useEffect(() => {
+        if (!userInteraction.current) {
+            return;
+        }
+
+        userInteraction.current = false;
+
+        let number = parseFloat(value);
+
+        if (!Number.isNaN(number)) {
+            props.onSave(props.name, number);
+        }
+    }, [value]);
+
+    return (
+        <div className="ComponentEditor">
+            <TextInput
+                label={prettifyName(props.name)}
+                value={value}
+                onSave={(value) => {
+                    userInteraction.current = true;
+                    setValue(value);
+                }}
+            />
+        </div>
+    );
+}
+
+const PointLightComponentEditor = makeCompoundComponentEditor({
+    color: GenericComponentEditor,
+    intensity: NumberComponentEditor,
+    range: NumberComponentEditor,
+    radius: NumberComponentEditor,
+    shadows_enabled: BooleanComponentEditor,
+    shadow_depth_bias: NumberComponentEditor,
+    shadow_normal_bias: NumberComponentEditor,
+});
+
 function makeMultipleChoiceComponentEditor(
     placeholder: string,
     options: {
@@ -729,6 +812,49 @@ function makeMultipleChoiceComponentEditor(
     };
 }
 
+function makeCompoundComponentEditor(
+    editors: Record<string, React.FC<ComponentEditorProps>>,
+): React.FC<ComponentEditorProps> {
+    return function CompoundComponentEditor(props: ComponentEditorProps) {
+        const { name, component, onSave } = props;
+
+        const globalStore = useGlobalStore();
+        const entity = globalStore.selection.first();
+
+        const [componentValue, setComponentValue] = useState(component);
+
+        useEffect(() => {
+            setComponentValue(component);
+        }, [entity, component]);
+
+        return (
+            <div className="ComponentEditor">
+                <VStack align="stretch">
+                    {Object.entries(editors).map(([name, Editor]) => {
+                        return (
+                            <Editor
+                                key={name}
+                                name={name}
+                                component={componentValue[name]}
+                                onSave={handleSave}
+                            />
+                        );
+                    })}
+                </VStack>
+            </div>
+        );
+
+        function handleSave(nestedName: string, nestedComponent: any) {
+            const updatedComponentValue = {
+                ...componentValue,
+                [nestedName]: nestedComponent,
+            };
+            setComponentValue(updatedComponentValue);
+            onSave(name, updatedComponentValue);
+        }
+    };
+}
+
 function prettifyName(name: string) {
-    return name.replace(/([a-z][a-z0-9_]+::)/g, "");
+    return name.replace(/([a-z][a-z0-9_]+::)/g, "").replace(/_/g, " ");
 }
