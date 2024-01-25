@@ -747,7 +747,32 @@ function NumberComponentEditor(props: ComponentEditorProps) {
 }
 
 const PointLightComponentEditor = makeCompoundComponentEditor({
-    color: GenericComponentEditor,
+    color: makeCompoundComponentEditor({
+        Rgba: makeCompoundComponentEditor({
+            red: NumberComponentEditor,
+            green: NumberComponentEditor,
+            blue: NumberComponentEditor,
+            alpha: NumberComponentEditor,
+        }),
+        RgbaLinear: makeCompoundComponentEditor({
+            hue: NumberComponentEditor,
+            saturation: NumberComponentEditor,
+            lightness: NumberComponentEditor,
+            alpha: NumberComponentEditor,
+        }),
+        Hsla: makeCompoundComponentEditor({
+            hue: NumberComponentEditor,
+            saturation: NumberComponentEditor,
+            lightness: NumberComponentEditor,
+            alpha: NumberComponentEditor,
+        }),
+        Lcha: makeCompoundComponentEditor({
+            lightness: NumberComponentEditor,
+            chroma: NumberComponentEditor,
+            hue: NumberComponentEditor,
+            alpha: NumberComponentEditor,
+        }),
+    }),
     intensity: NumberComponentEditor,
     range: NumberComponentEditor,
     radius: NumberComponentEditor,
@@ -830,16 +855,18 @@ function makeCompoundComponentEditor(
         return (
             <div className="ComponentEditor">
                 <VStack align="stretch">
-                    {Object.entries(editors).map(([name, Editor]) => {
-                        return (
-                            <Editor
-                                key={name}
-                                name={name}
-                                component={componentValue[name]}
-                                onSave={handleSave}
-                            />
-                        );
-                    })}
+                    {Object.entries(editors)
+                        .filter(([name]) => name in componentValue)
+                        .map(([name, Editor]) => {
+                            return (
+                                <Editor
+                                    key={name}
+                                    name={name}
+                                    component={componentValue[name]}
+                                    onSave={handleSave}
+                                />
+                            );
+                        })}
                 </VStack>
             </div>
         );
