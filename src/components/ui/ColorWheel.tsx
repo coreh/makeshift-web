@@ -1,43 +1,6 @@
 import React from "react";
 import { ZStack } from "../layout/ZStack";
-
-export type RgbaColor = {
-    Rgba: {
-        red: number;
-        green: number;
-        blue: number;
-        alpha: number;
-    };
-};
-
-export type RgbaLinearColor = {
-    Hsla: {
-        hue: number;
-        saturation: number;
-        lightness: number;
-        alpha: number;
-    };
-};
-
-export type HslaColor = {
-    Lcha: {
-        lightness: number;
-        chroma: number;
-        hue: number;
-        alpha: number;
-    };
-};
-
-export type LchaColor = {
-    RgbaLinear: {
-        red: number;
-        green: number;
-        blue: number;
-        alpha: number;
-    };
-};
-
-export type Color = RgbaColor | RgbaLinearColor | HslaColor | LchaColor;
+import { Color } from "../../utils/color";
 
 export interface ColorWheelProps {
     value?: Color;
