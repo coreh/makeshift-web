@@ -1050,6 +1050,16 @@ a {
         }
     }
 
+    /**
+     * Used to mask the artifacts from applying gamma correction to the
+     * HSL gradient (rendered in sRGB) to get it to match the sRGB linear "look"
+     */
+    .Blur {
+        background: none;
+        -webkit-backdrop-filter: blur(4px);
+        backdrop-filter: blur(4px);
+    }
+
     .Handle {
         position: absolute;
         width: calc(var(--control-height) * 0.5);

@@ -75,12 +75,15 @@ export function ColorWheel(props: ColorWheelProps) {
                     <div style={{ background: `hsl(${hue}, 100%, 50%)` }} />
                     <div className="SaturationGradient" />
                     <div className="LightnessGradient" />
+                    {linearColorspace && <div className="Blur" />}
                     <div
                         className="Handle SaturationLightness"
                         style={{
                             top: `${100 - lightness * 100}%`,
                             left: `${saturation * 100}%`,
-                            background: `color(srgb ${red} ${green} ${blue})`,
+                            background: linearColorspace
+                                ? `color(srgb-linear ${red} ${green} ${blue})`
+                                : `color(srgb ${red} ${green} ${blue})`,
                         }}
                     />
                 </div>
