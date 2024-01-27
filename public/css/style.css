@@ -993,7 +993,7 @@ a {
         position: relative;
         width: 100%;
         min-width: 0;
-        max-width: calc(var(--control-height) * 12);
+        max-width: calc(var(--control-height) * 8);
         aspect-ratio: 1;
         border-radius: 100%;
 
@@ -1027,7 +1027,7 @@ a {
         cursor: crosshair;
         position: relative;
         width: 63%;
-        max-width: calc(var(--control-height) * 12 * 0.63);
+        max-width: calc(var(--control-height) * 8 * 0.63);
         aspect-ratio: 1;
         display: grid;
 
