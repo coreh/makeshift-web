@@ -240,6 +240,16 @@ function getComponentInfo(name: string, component: any) {
             Icon = Lucide.Lightbulb;
             ComponentEditor = PointLightComponentEditor;
             break;
+        case "bevy_pbr::light::DirectionalLight":
+            topic = "light";
+            Icon = Lucide.Sunset;
+            ComponentEditor = DirectionalLightComponentEditor;
+            break;
+        case "bevy_pbr::light::SpotLight":
+            topic = "light";
+            Icon = Lucide.LampDesk;
+            ComponentEditor = SpotLightComponentEditor;
+            break;
         default:
             if (component === Unserializable) {
                 topic = "code";
@@ -1074,36 +1084,30 @@ function ColorComponentEditor(props: ComponentEditorProps) {
 }
 
 const PointLightComponentEditor = makeCompoundComponentEditor({
-    // color: makeCompoundComponentEditor({
-    //     Rgba: makeCompoundComponentEditor({
-    //         red: NumberComponentEditor,
-    //         green: NumberComponentEditor,
-    //         blue: NumberComponentEditor,
-    //         alpha: NumberComponentEditor,
-    //     }),
-    //     RgbaLinear: makeCompoundComponentEditor({
-    //         hue: NumberComponentEditor,
-    //         saturation: NumberComponentEditor,
-    //         lightness: NumberComponentEditor,
-    //         alpha: NumberComponentEditor,
-    //     }),
-    //     Hsla: makeCompoundComponentEditor({
-    //         hue: NumberComponentEditor,
-    //         saturation: NumberComponentEditor,
-    //         lightness: NumberComponentEditor,
-    //         alpha: NumberComponentEditor,
-    //     }),
-    //     Lcha: makeCompoundComponentEditor({
-    //         lightness: NumberComponentEditor,
-    //         chroma: NumberComponentEditor,
-    //         hue: NumberComponentEditor,
-    //         alpha: NumberComponentEditor,
-    //     }),
-    // }),
     color: ColorComponentEditor,
     intensity: NumberComponentEditor,
     range: NumberComponentEditor,
     radius: NumberComponentEditor,
+    shadows_enabled: BooleanComponentEditor,
+    shadow_depth_bias: NumberComponentEditor,
+    shadow_normal_bias: NumberComponentEditor,
+});
+
+const SpotLightComponentEditor = makeCompoundComponentEditor({
+    color: ColorComponentEditor,
+    intensity: NumberComponentEditor,
+    range: NumberComponentEditor,
+    radius: NumberComponentEditor,
+    shadows_enabled: BooleanComponentEditor,
+    shadow_depth_bias: NumberComponentEditor,
+    shadow_normal_bias: NumberComponentEditor,
+    outer_angle: NumberComponentEditor,
+    inner_angle: NumberComponentEditor,
+});
+
+const DirectionalLightComponentEditor = makeCompoundComponentEditor({
+    color: ColorComponentEditor,
+    illuminance: NumberComponentEditor,
     shadows_enabled: BooleanComponentEditor,
     shadow_depth_bias: NumberComponentEditor,
     shadow_normal_bias: NumberComponentEditor,
