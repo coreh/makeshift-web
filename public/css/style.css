@@ -1083,3 +1083,46 @@ a {
         transform: translate(-50%, -50%);
     }
 }
+
+.HDRIntensitySwatches {
+    border-radius: var(--control-radius);
+    background: var(--surface-minus-2);
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+
+    .Wrapper {
+        display: flex;
+        height: calc(var(--control-height) * 2);
+        justify-content: stretch;
+        border-radius: var(--control-radius);
+        cursor: crosshair;
+        border-radius: var(--control-radius);
+        background: black;
+        margin: calc(var(--control-gap) * 2);
+
+        .Swatch {
+            display: flex;
+            flex-grow: 1;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            /* mix-blend-mode: screen; */
+
+            &:first-child {
+                border-top-left-radius: var(--control-radius);
+                border-bottom-left-radius: var(--control-radius);
+            }
+
+            &:last-child {
+                border-top-right-radius: var(--control-radius);
+                border-bottom-right-radius: var(--control-radius);
+            }
+
+            .Label {
+                position: relative;
+                z-index: 1;
+            }
+        }
+    }
+}

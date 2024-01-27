@@ -29,6 +29,7 @@ import { Checkbox } from "./components/ui/Checkbox";
 import { Topic, TopicName } from "./components/ui/common";
 import { ColorWheel } from "./components/ui/ColorWheel";
 import { Color } from "./utils/color";
+import { HDRIntensitySwatches } from "./components/ui/HDRIntensitySwatches";
 
 export function Inspector() {
     const globalStore = useGlobalStore();
@@ -922,19 +923,25 @@ function ColorComponentEditor(props: ComponentEditorProps) {
                 </HStack>
             )}
             {colorSpace === "RgbaLinear" && (
-                <HStack>
-                    <NumberComponentEditor
-                        name="HDR Intensity (×2ⁿ)"
-                        component={intensity}
-                        onSave={handleIntensitySave}
+                <VStack>
+                    <HStack>
+                        <NumberComponentEditor
+                            name="HDR Intensity (×2ⁿ)"
+                            component={intensity}
+                            onSave={handleIntensitySave}
+                        />
+                        <Button
+                            disabled={red == 1 || green == 1 || blue == 1}
+                            onClick={handleIntensityRecalculate}
+                        >
+                            <Lucide.Aperture />
+                        </Button>
+                    </HStack>
+                    <HDRIntensitySwatches
+                        value={component}
+                        onChange={handleIntensitySwatchChange}
                     />
-                    <Button
-                        disabled={red == 1 || green == 1 || blue == 1}
-                        onClick={handleIntensityRecalculate}
-                    >
-                        <Lucide.Aperture />
-                    </Button>
-                </HStack>
+                </VStack>
             )}
         </div>
     );
@@ -1030,6 +1037,19 @@ function ColorComponentEditor(props: ComponentEditorProps) {
         setValue(updatedValue);
         setIntensity(intensity);
         onSave(name, updatedValue);
+    }
+
+    function handleIntensitySwatchChange(color: Color) {
+        const [extractedValue, extractedIntensity] =
+            Color.extractHdrIntensity(color);
+        setValue(extractedValue);
+        setIntensity(
+            Math.round(extractedIntensity * COLOR_ROUND_PRECISION) /
+                COLOR_ROUND_PRECISION,
+        );
+        let result = Color.toRhsColorspace(color, value);
+        result = Color.roundPrecision(result, COLOR_ROUND_PRECISION);
+        onSave(name, result);
     }
 
     function handleIntensityRecalculate() {

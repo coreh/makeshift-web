@@ -37,7 +37,9 @@ export type LchaColor = {
 export type Color = RgbaColor | RgbaLinearColor | HslaColor | LchaColor;
 
 export namespace Color {
-    export function extractHdrIntensity(color: Color): [Color, number] {
+    export function extractHdrIntensity(
+        color: Color,
+    ): [RgbaLinearColor, number] {
         const { red, green, blue, alpha } =
             Color.toRgbaLinear(color).RgbaLinear;
         const l = Math.max(red, green, blue);
@@ -57,7 +59,10 @@ export namespace Color {
         ];
     }
 
-    export function injectHdrIntensity(color: Color, intensity: number): Color {
+    export function injectHdrIntensity(
+        color: Color,
+        intensity: number,
+    ): RgbaLinearColor {
         const { red, green, blue, alpha } =
             Color.toRgbaLinear(color).RgbaLinear;
         const l = Math.pow(2, intensity);
