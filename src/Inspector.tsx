@@ -884,6 +884,43 @@ function ColorComponentEditor(props: ComponentEditorProps) {
                     </VStack>
                 </HStack>
             )}
+            {(colorSpace === "Hsla" || colorSpace === "Lcha") && (
+                <HStack>
+                    <VStack grow={1}>
+                        <NumberComponentEditor
+                            name="hue"
+                            component={hue}
+                            onSave={handleChannelSave}
+                        />
+                        {colorSpace === "Lcha" && (
+                            <NumberComponentEditor
+                                name="chroma"
+                                component={chroma}
+                                onSave={handleChannelSave}
+                            />
+                        )}
+                        {colorSpace === "Hsla" && (
+                            <NumberComponentEditor
+                                name="saturation"
+                                component={saturation}
+                                onSave={handleChannelSave}
+                            />
+                        )}
+                    </VStack>
+                    <VStack grow={1}>
+                        <NumberComponentEditor
+                            name="lightness"
+                            component={lightness}
+                            onSave={handleChannelSave}
+                        />
+                        <NumberComponentEditor
+                            name="alpha"
+                            component={alpha}
+                            onSave={handleChannelSave}
+                        />
+                    </VStack>
+                </HStack>
+            )}
             {colorSpace === "RgbaLinear" && (
                 <HStack>
                     <NumberComponentEditor
