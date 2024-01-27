@@ -37,6 +37,117 @@ export type LchaColor = {
 export type Color = RgbaColor | RgbaLinearColor | HslaColor | LchaColor;
 
 export namespace Color {
+    export function extractHdrIntensity(color: Color): [Color, number] {
+        const { red, green, blue, alpha } =
+            Color.toRgbaLinear(color).RgbaLinear;
+        const l = Math.max(red, green, blue);
+        if (l === 0) {
+            return [Color.rgbaLinear(0, 0, 0, alpha), 0];
+        }
+        return [
+            {
+                RgbaLinear: {
+                    red: red / l,
+                    green: green / l,
+                    blue: blue / l,
+                    alpha,
+                },
+            },
+            Math.log2(l),
+        ];
+    }
+
+    export function injectHdrIntensity(color: Color, intensity: number): Color {
+        const { red, green, blue, alpha } =
+            Color.toRgbaLinear(color).RgbaLinear;
+        const l = Math.pow(2, intensity);
+        return {
+            RgbaLinear: {
+                red: red * l,
+                green: green * l,
+                blue: blue * l,
+                alpha,
+            },
+        };
+    }
+
+    export function atHdrIntensity(color: Color, intensity: number): Color {
+        const { red, green, blue, alpha } =
+            Color.toRgbaLinear(color).RgbaLinear;
+
+        const l = Math.pow(2, intensity);
+        return {
+            RgbaLinear: {
+                red: red / l,
+                green: green / l,
+                blue: blue / l,
+                alpha,
+            },
+        };
+    }
+
+    export function sdrSafe(color: Color): Color {
+        const [sdrColor, intensity] = extractHdrIntensity(color);
+        if (intensity > 0) {
+            return sdrColor;
+        }
+        return color;
+    }
+
+    export function roundPrecision(color: Color, precision: number): Color {
+        switch (true) {
+            case "Rgba" in color: {
+                const { red, green, blue, alpha } = color.Rgba;
+                return {
+                    Rgba: {
+                        red: Math.round(red * precision) / precision,
+                        green: Math.round(green * precision) / precision,
+                        blue: Math.round(blue * precision) / precision,
+                        alpha: Math.round(alpha * precision) / precision,
+                    },
+                };
+            }
+            case "RgbaLinear" in color: {
+                const { red, green, blue, alpha } = color.RgbaLinear;
+                return {
+                    RgbaLinear: {
+                        red: Math.round(red * precision) / precision,
+                        green: Math.round(green * precision) / precision,
+                        blue: Math.round(blue * precision) / precision,
+                        alpha: Math.round(alpha * precision) / precision,
+                    },
+                };
+            }
+            case "Hsla" in color: {
+                const { hue, saturation, lightness, alpha } = color.Hsla;
+                return {
+                    Hsla: {
+                        hue: Math.round(hue * precision) / precision,
+                        saturation:
+                            Math.round(saturation * precision) / precision,
+                        lightness:
+                            Math.round(lightness * precision) / precision,
+                        alpha: Math.round(alpha * precision) / precision,
+                    },
+                };
+            }
+            case "Lcha" in color: {
+                const { lightness, chroma, hue, alpha } = color.Lcha;
+                return {
+                    Lcha: {
+                        lightness:
+                            Math.round(lightness * precision) / precision,
+                        chroma: Math.round(chroma * precision) / precision,
+                        hue: Math.round(hue * precision) / precision,
+                        alpha: Math.round(alpha * precision) / precision,
+                    },
+                };
+            }
+            default:
+                throw new Error("Invalid color format");
+        }
+    }
+
     export function rgba(
         red: number,
         green: number,
@@ -99,6 +210,21 @@ export namespace Color {
                 alpha,
             },
         };
+    }
+
+    export function toRhsColorspace(color: Color, hrs: Color) {
+        switch (true) {
+            case "Rgba" in hrs:
+                return toRgba(color);
+            case "RgbaLinear" in hrs:
+                return toRgbaLinear(color);
+            case "Hsla" in hrs:
+                return toHsla(color);
+            case "Lcha" in hrs:
+                return toLcha(color);
+            default:
+                throw new Error("Invalid color format");
+        }
     }
 
     export function toRgba(color: Color): RgbaColor {

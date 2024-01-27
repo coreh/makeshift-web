@@ -373,7 +373,8 @@ svg.lucide {
     flex-direction: column;
     flex-grow: 1;
     flex-basis: 0;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .ComponentInspector {
@@ -437,6 +438,7 @@ svg.lucide {
     padding-left: var(--control-padding-x);
     padding-right: var(--control-padding-x);
     border-radius: var(--control-radius);
+    flex-grow: 1;
     gap: var(--control-gap);
 
     label {
@@ -986,12 +988,15 @@ a {
     border-radius: var(--control-radius);
     padding: var(--control-gap);
 
-    .HueGradient {
+    .Wheel {
         position: relative;
         width: 100%;
         min-width: 0;
         max-width: calc(var(--control-height) * 12);
         aspect-ratio: 1;
+    }
+
+    .HueGradient {
         padding: 6px;
         background: linear-gradient(
                 var(--surface-minus-2),
@@ -1008,32 +1013,29 @@ a {
             );
         background-clip: content-box, border-box;
         border-radius: 100%;
+    }
 
-        .Handle {
-            left: 50%;
-            top: 3px;
-            background-color: red;
+    .Box {
+        position: relative;
+        width: 63%;
+        max-width: calc(var(--control-height) * 12 * 0.63);
+        aspect-ratio: 1;
+        display: grid;
+
+        & > * {
+            grid-area: 1 / 1 / 1 / 1;
         }
     }
 
     .SaturationGradient {
-        position: relative;
-        width: 63%;
-        max-width: calc(var(--control-height) * 12 * 0.63);
-        aspect-ratio: 1;
-
         background: linear-gradient(
             to right,
             hsl(0, 0%, 50%),
-            hsl(0, 100%, 50%)
+            hsla(0, 0%, 50%, 0)
         );
     }
 
     .LightnessGradient {
-        position: relative;
-        width: 63%;
-        max-width: calc(var(--control-height) * 12 * 0.63);
-        aspect-ratio: 1;
         background: linear-gradient(
             to top,
             hsl(0, 0%, 0%),

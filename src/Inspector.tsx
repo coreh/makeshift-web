@@ -27,7 +27,8 @@ import {
 } from "./components/ui/Select";
 import { Checkbox } from "./components/ui/Checkbox";
 import { Topic, TopicName } from "./components/ui/common";
-import { Color, ColorWheel, RgbaColor } from "./components/ui/ColorWheel";
+import { ColorWheel } from "./components/ui/ColorWheel";
+import { Color } from "./utils/color";
 
 export function Inspector() {
     const globalStore = useGlobalStore();
@@ -749,17 +750,75 @@ function NumberComponentEditor(props: ComponentEditorProps) {
 }
 
 function ColorComponentEditor(props: ComponentEditorProps) {
+    const { name, component, onSave } = props;
     const globalStore = useGlobalStore();
     const entity = globalStore.selection.first();
     const [value, setValue] = useState<Color>(props.component);
+    const [intensity, setIntensity] = useState<number>(0);
 
     useEffect(() => {
-        setValue(props.component);
+        if ("RgbaLinear" in component) {
+            if (intensity === 0) {
+                const [extractedValue, extractedIntensity] =
+                    Color.extractHdrIntensity(component);
+                setValue(Color.roundPrecision(extractedValue, 1000));
+                setIntensity(Math.round(extractedIntensity * 1000) / 1000);
+            } else {
+                setValue(
+                    Color.roundPrecision(
+                        Color.atHdrIntensity(component, intensity),
+                        1000,
+                    ),
+                );
+            }
+        } else {
+            setValue(component);
+            setIntensity(0);
+        }
     }, [entity, props.component]);
+
+    let colorSpace: "Rgba" | "RgbaLinear" | "Hsla" | "Lcha";
+    let red: number = 0,
+        green: number = 0,
+        blue: number = 0,
+        alpha: number = 0,
+        hue: number = 0,
+        saturation: number = 0,
+        lightness: number = 0,
+        chroma: number = 0;
+
+    switch (true) {
+        case "Rgba" in value:
+            colorSpace = "Rgba";
+            ({
+                Rgba: { red, green, blue, alpha },
+            } = value);
+            break;
+        case "RgbaLinear" in value:
+            colorSpace = "RgbaLinear";
+            ({
+                RgbaLinear: { red, green, blue, alpha },
+            } = value);
+            break;
+        case "Hsla" in value:
+            colorSpace = "Hsla";
+            ({
+                Hsla: { hue, saturation, lightness, alpha },
+            } = value);
+            break;
+        case "Lcha" in value:
+            colorSpace = "Lcha";
+            ({
+                Lcha: { lightness, chroma, hue, alpha },
+            } = value);
+            break;
+        default:
+            throw new Error(`Unknown color space`);
+    }
 
     return (
         <div className="ComponentEditor">
-            <Select value="Rgba">
+            <Select value={colorSpace} onValueChange={handleColorSpaceChange}>
                 <SelectTrigger>
                     <label>Color Space</label>
                     <SelectValue placeholder="Color Mode" />
@@ -773,45 +832,162 @@ function ColorComponentEditor(props: ComponentEditorProps) {
                     </SelectGroup>
                 </SelectContent>
             </Select>
-            <HStack>
-                <VStack>
-                    <Topic topic="x">
-                        <NumberComponentEditor
-                            name="red"
-                            component={(value as RgbaColor).Rgba.red}
-                            onSave={() => {}}
-                        />
-                    </Topic>
-                    <Topic topic="y">
-                        <NumberComponentEditor
-                            name="green"
-                            component={(value as RgbaColor).Rgba.green}
-                            onSave={() => {}}
-                        />
-                    </Topic>
-                </VStack>
-                <VStack>
-                    <Topic topic="z">
-                        <NumberComponentEditor
-                            name="blue"
-                            component={(value as RgbaColor).Rgba.blue}
-                            onSave={() => {}}
-                        />
-                    </Topic>
-                    <NumberComponentEditor
-                        name="alpha"
-                        component={(value as RgbaColor).Rgba.alpha}
-                        onSave={() => {}}
-                    />
-                </VStack>
-            </HStack>
-            <TextInput label="HDR Intensity (×2ⁿ)" value="+0" />
             <ColorWheel
                 value={value}
+                linearColorspace={colorSpace === "RgbaLinear"}
                 onChange={(value) => props.onSave(props.name, value)}
             />
+            {(colorSpace === "Rgba" || colorSpace === "RgbaLinear") && (
+                <HStack>
+                    <VStack grow={1}>
+                        <Topic topic="x">
+                            <NumberComponentEditor
+                                name="red"
+                                component={red}
+                                onSave={handleChannelSave}
+                            />
+                        </Topic>
+                        <Topic topic="y">
+                            <NumberComponentEditor
+                                name="green"
+                                component={green}
+                                onSave={handleChannelSave}
+                            />
+                        </Topic>
+                    </VStack>
+                    <VStack grow={1}>
+                        <Topic topic="z">
+                            <NumberComponentEditor
+                                name="blue"
+                                component={blue}
+                                onSave={handleChannelSave}
+                            />
+                        </Topic>
+                        <NumberComponentEditor
+                            name="alpha"
+                            component={alpha}
+                            onSave={handleChannelSave}
+                        />
+                    </VStack>
+                </HStack>
+            )}
+            {colorSpace === "RgbaLinear" && (
+                <HStack>
+                    <NumberComponentEditor
+                        name="HDR Intensity (×2ⁿ)"
+                        component={intensity}
+                        onSave={handleIntensitySave}
+                    />
+                    <Button
+                        disabled={red == 1 || green == 1 || blue == 1}
+                        onClick={handleIntensityRecalculate}
+                    >
+                        <Lucide.Aperture />
+                    </Button>
+                </HStack>
+            )}
         </div>
     );
+
+    function handleChannelSave(nestedName: string, nestedComponent: number) {
+        let result;
+        switch (colorSpace) {
+            case "Rgba":
+                result = {
+                    Rgba: {
+                        red,
+                        green,
+                        blue,
+                        alpha,
+                        [nestedName]: nestedComponent,
+                    },
+                };
+                break;
+            case "RgbaLinear":
+                result = {
+                    RgbaLinear: {
+                        red,
+                        green,
+                        blue,
+                        alpha,
+                        [nestedName]: nestedComponent,
+                    },
+                };
+                result = Color.roundPrecision(
+                    Color.toRhsColorspace(
+                        Color.injectHdrIntensity(result, intensity),
+                        value,
+                    ),
+                    1000,
+                );
+                break;
+            case "Hsla":
+                result = {
+                    Hsla: {
+                        hue,
+                        saturation,
+                        lightness,
+                        alpha,
+                        [nestedName]: nestedComponent,
+                    },
+                };
+                break;
+            case "Lcha":
+                result = {
+                    Lcha: {
+                        lightness,
+                        chroma,
+                        hue,
+                        alpha,
+                        [nestedName]: nestedComponent,
+                    },
+                };
+                break;
+            default:
+                throw new Error(`Unknown color space`);
+        }
+        setValue(result);
+        onSave(name, result);
+    }
+
+    function handleColorSpaceChange(colorSpace: string) {
+        let result;
+        switch (colorSpace) {
+            case "Rgba":
+                result = Color.toRgba(value);
+                break;
+            case "RgbaLinear":
+                result = Color.toRgbaLinear(value);
+                break;
+            case "Hsla":
+                result = Color.toHsla(value);
+                break;
+            case "Lcha":
+                result = Color.toLcha(value);
+                break;
+            default:
+                throw new Error(`Unknown color space`);
+        }
+        result = Color.roundPrecision(result, 1000);
+        onSave(name, result);
+    }
+
+    function handleIntensitySave(_nestedName: string, intensity: number) {
+        const updatedValue = Color.roundPrecision(
+            Color.injectHdrIntensity(value, intensity),
+            1000,
+        );
+        setValue(updatedValue);
+        setIntensity(intensity);
+        onSave(name, updatedValue);
+    }
+
+    function handleIntensityRecalculate() {
+        const [extractedValue, extractedIntensity] =
+            Color.extractHdrIntensity(component);
+        setValue(Color.roundPrecision(extractedValue, 1000));
+        setIntensity(Math.round(extractedIntensity * 1000) / 1000);
+    }
 }
 
 const PointLightComponentEditor = makeCompoundComponentEditor({
