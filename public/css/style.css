@@ -995,6 +995,13 @@ a {
         min-width: 0;
         max-width: calc(var(--control-height) * 12);
         aspect-ratio: 1;
+        border-radius: 100%;
+
+        &:focus {
+            outline: 2px solid
+                color-mix(in srgb, var(--highlight) 80%, transparent);
+            outline-offset: 1px;
+        }
     }
 
     .HueGradient {
@@ -1026,6 +1033,12 @@ a {
 
         & > * {
             grid-area: 1 / 1 / 1 / 1;
+        }
+
+        &:focus {
+            outline: 2px solid
+                color-mix(in srgb, var(--highlight) 80%, transparent);
+            outline-offset: 1px;
         }
     }
 

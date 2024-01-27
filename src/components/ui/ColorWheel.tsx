@@ -52,6 +52,7 @@ export function ColorWheel(props: ColorWheelProps) {
                     ref={wheelRef}
                     className="Wheel"
                     onPointerDown={handleWheelPointerDown}
+                    tabIndex={0}
                 >
                     <div
                         className="Handle Hue"
@@ -71,6 +72,7 @@ export function ColorWheel(props: ColorWheelProps) {
                             ? `url('#${svgFilterId}')`
                             : undefined,
                     }}
+                    tabIndex={0}
                 >
                     <div style={{ background: `hsl(${hue}, 100%, 50%)` }} />
                     <div className="SaturationGradient" />
