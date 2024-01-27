@@ -11,7 +11,8 @@ import { HStack } from "./components/layout/HStack";
 import { Toolbar } from "./components/ui/Toolbar";
 
 export async function fetcher(obj: any) {
-    const res = await fetch("http://localhost:8765/brp", {
+    const url = new URL(window.location.href);
+    const res = await fetch(`http://${url.hostname}:8765/brp`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
