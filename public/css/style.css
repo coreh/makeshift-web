@@ -989,6 +989,7 @@ a {
     padding: var(--control-gap);
 
     .Wheel {
+        cursor: crosshair;
         position: relative;
         width: 100%;
         min-width: 0;
@@ -1016,6 +1017,7 @@ a {
     }
 
     .Box {
+        cursor: crosshair;
         position: relative;
         width: 63%;
         max-width: calc(var(--control-height) * 12 * 0.63);

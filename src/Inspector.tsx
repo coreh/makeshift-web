@@ -749,25 +749,38 @@ function NumberComponentEditor(props: ComponentEditorProps) {
     );
 }
 
+const COLOR_ROUND_PRECISION = 100_000;
+
 function ColorComponentEditor(props: ComponentEditorProps) {
     const { name, component, onSave } = props;
     const globalStore = useGlobalStore();
     const entity = globalStore.selection.first();
     const [value, setValue] = useState<Color>(props.component);
     const [intensity, setIntensity] = useState<number>(0);
+    const hasCalculatedIntensity = useRef(false);
+
+    useEffect(() => {
+        hasCalculatedIntensity.current = false;
+    }, [entity]);
 
     useEffect(() => {
         if ("RgbaLinear" in component) {
-            if (intensity === 0) {
+            if (!hasCalculatedIntensity.current) {
+                hasCalculatedIntensity.current = true;
                 const [extractedValue, extractedIntensity] =
                     Color.extractHdrIntensity(component);
-                setValue(Color.roundPrecision(extractedValue, 1000));
-                setIntensity(Math.round(extractedIntensity * 1000) / 1000);
+                setValue(
+                    Color.roundPrecision(extractedValue, COLOR_ROUND_PRECISION),
+                );
+                setIntensity(
+                    Math.round(extractedIntensity * COLOR_ROUND_PRECISION) /
+                        COLOR_ROUND_PRECISION,
+                );
             } else {
                 setValue(
                     Color.roundPrecision(
                         Color.atHdrIntensity(component, intensity),
-                        1000,
+                        COLOR_ROUND_PRECISION,
                     ),
                 );
             }
@@ -835,7 +848,7 @@ function ColorComponentEditor(props: ComponentEditorProps) {
             <ColorWheel
                 value={value}
                 linearColorspace={colorSpace === "RgbaLinear"}
-                onChange={(value) => props.onSave(props.name, value)}
+                onChange={handleWheelChange}
             />
             {(colorSpace === "Rgba" || colorSpace === "RgbaLinear") && (
                 <HStack>
@@ -918,7 +931,7 @@ function ColorComponentEditor(props: ComponentEditorProps) {
                         Color.injectHdrIntensity(result, intensity),
                         value,
                     ),
-                    1000,
+                    COLOR_ROUND_PRECISION,
                 );
                 break;
             case "Hsla":
@@ -968,14 +981,14 @@ function ColorComponentEditor(props: ComponentEditorProps) {
             default:
                 throw new Error(`Unknown color space`);
         }
-        result = Color.roundPrecision(result, 1000);
+        result = Color.roundPrecision(result, COLOR_ROUND_PRECISION);
         onSave(name, result);
     }
 
     function handleIntensitySave(_nestedName: string, intensity: number) {
         const updatedValue = Color.roundPrecision(
             Color.injectHdrIntensity(value, intensity),
-            1000,
+            COLOR_ROUND_PRECISION,
         );
         setValue(updatedValue);
         setIntensity(intensity);
@@ -985,8 +998,21 @@ function ColorComponentEditor(props: ComponentEditorProps) {
     function handleIntensityRecalculate() {
         const [extractedValue, extractedIntensity] =
             Color.extractHdrIntensity(component);
-        setValue(Color.roundPrecision(extractedValue, 1000));
-        setIntensity(Math.round(extractedIntensity * 1000) / 1000);
+        setValue(Color.roundPrecision(extractedValue, COLOR_ROUND_PRECISION));
+        setIntensity(
+            Math.round(extractedIntensity * COLOR_ROUND_PRECISION) /
+                COLOR_ROUND_PRECISION,
+        );
+    }
+
+    function handleWheelChange(value: Color) {
+        let result = Color.toRhsColorspace(value, component);
+        if (intensity > 0) {
+            result = Color.injectHdrIntensity(result, intensity);
+        }
+        result = Color.roundPrecision(result, COLOR_ROUND_PRECISION);
+        setValue(result);
+        onSave(name, result);
     }
 }
 

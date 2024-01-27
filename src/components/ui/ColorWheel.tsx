@@ -1,14 +1,20 @@
-import React, { useId } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import { ZStack } from "../layout/ZStack";
 import { Color } from "../../utils/color";
+import { flushSync } from "react-dom";
 
 export interface ColorWheelProps {
     value?: Color;
     linearColorspace?: boolean;
-    onChange?: (value: string) => void;
+    onChange?: (value: Color) => void;
 }
 
 export function ColorWheel(props: ColorWheelProps) {
+    const isDraggingWheelRef = useRef(false);
+    const isDraggingBoxRef = useRef(false);
+    const wheelRef = useRef<HTMLDivElement>(null);
+    const boxRef = useRef<HTMLDivElement>(null);
+
     const svgFilterId = useId();
     const {
         value = Color.rgba(1, 1, 1, 1),
@@ -18,7 +24,7 @@ export function ColorWheel(props: ColorWheelProps) {
 
     const sdrSafeValue = Color.sdrSafe(value);
     const {
-        Rgba: { red, green, blue },
+        Rgba: { red, green, blue, alpha },
     } = Color.toRgba(sdrSafeValue);
 
     const {
@@ -28,12 +34,25 @@ export function ColorWheel(props: ColorWheelProps) {
     const hueX = Math.sin((hue / 180) * Math.PI);
     const hueY = -Math.cos((hue / 180) * Math.PI);
 
+    useEffect(() => {
+        window.addEventListener("pointerup", handlePointerUp);
+        window.addEventListener("pointermove", handlePointerMove);
+        return () => {
+            window.removeEventListener("pointerup", handlePointerUp);
+            window.removeEventListener("pointermove", handlePointerMove);
+        };
+    }, [handlePointerUp, handlePointerMove]);
+
     return (
         <div className="ColorWheel">
             <ZStack grow={1}>
                 {linearColorspace && <SVGFilter id={svgFilterId} />}
                 <div className="Wheel HueGradient" />
-                <div className="Wheel">
+                <div
+                    ref={wheelRef}
+                    className="Wheel"
+                    onPointerDown={handleWheelPointerDown}
+                >
                     <div
                         className="Handle Hue"
                         style={{
@@ -44,7 +63,9 @@ export function ColorWheel(props: ColorWheelProps) {
                     />
                 </div>
                 <div
+                    ref={boxRef}
                     className="Box"
+                    onPointerDown={handleBoxPointerDown}
                     style={{
                         filter: linearColorspace
                             ? `url('#${svgFilterId}')`
@@ -66,6 +87,67 @@ export function ColorWheel(props: ColorWheelProps) {
             </ZStack>
         </div>
     );
+
+    function handleBoxPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+        e.preventDefault();
+        e.stopPropagation();
+        isDraggingBoxRef.current = true;
+        boxRef.current!.focus();
+        handlePointerMove(e.nativeEvent);
+    }
+
+    function handleWheelPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+        e.preventDefault();
+        e.stopPropagation();
+        isDraggingWheelRef.current = true;
+        wheelRef.current!.focus();
+        handlePointerMove(e.nativeEvent);
+    }
+
+    function handlePointerUp(e: PointerEvent) {
+        e.preventDefault();
+        e.stopPropagation();
+        isDraggingWheelRef.current = false;
+        isDraggingBoxRef.current = false;
+    }
+
+    function handlePointerMove(e: PointerEvent) {
+        if (isDraggingBoxRef.current) {
+            const boxBounds = boxRef.current!.getBoundingClientRect();
+            const x = Math.max(
+                0,
+                Math.min((e.clientX - boxBounds.left) / boxBounds.width, 1),
+            );
+            const y = Math.max(
+                0,
+                Math.min((e.clientY - boxBounds.top) / boxBounds.height, 1),
+            );
+
+            const lightness = 1 - y;
+            const saturation = x;
+
+            onChange?.(Color.hsla(hue, saturation, lightness, alpha));
+        } else if (isDraggingWheelRef.current) {
+            const ringBounds = wheelRef.current!.getBoundingClientRect();
+            const ringCenterX = ringBounds.left + ringBounds.width / 2;
+            const ringCenterY = ringBounds.top + ringBounds.height / 2;
+
+            const angle = Math.atan2(
+                e.clientY - ringCenterY,
+                e.clientX - ringCenterX,
+            );
+
+            let hue = Math.round((angle / Math.PI) * 180) + 90;
+            if (hue > 360) {
+                hue -= 360;
+            }
+            if (hue < 0) {
+                hue += 360;
+            }
+
+            onChange?.(Color.hsla(hue, saturation, lightness, alpha));
+        }
+    }
 }
 function SVGFilter(props: { id: string }) {
     return (
