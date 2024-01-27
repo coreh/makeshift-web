@@ -26,6 +26,8 @@ import {
     SelectValue,
 } from "./components/ui/Select";
 import { Checkbox } from "./components/ui/Checkbox";
+import { Topic, TopicName } from "./components/ui/common";
+import { Color, ColorWheel, RgbaColor } from "./components/ui/ColorWheel";
 
 export function Inspector() {
     const globalStore = useGlobalStore();
@@ -746,33 +748,100 @@ function NumberComponentEditor(props: ComponentEditorProps) {
     );
 }
 
+function ColorComponentEditor(props: ComponentEditorProps) {
+    const globalStore = useGlobalStore();
+    const entity = globalStore.selection.first();
+    const [value, setValue] = useState<Color>(props.component);
+
+    useEffect(() => {
+        setValue(props.component);
+    }, [entity, props.component]);
+
+    return (
+        <div className="ComponentEditor">
+            <Select value="Rgba">
+                <SelectTrigger>
+                    <label>Color Space</label>
+                    <SelectValue placeholder="Color Mode" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectGroup>
+                        <SelectItem value="Rgba">Rgba</SelectItem>
+                        <SelectItem value="RgbaLinear">RgbaLinear</SelectItem>
+                        <SelectItem value="Hsla">Hsla</SelectItem>
+                        <SelectItem value="Lcha">Lcha</SelectItem>
+                    </SelectGroup>
+                </SelectContent>
+            </Select>
+            <HStack>
+                <VStack>
+                    <Topic topic="x">
+                        <NumberComponentEditor
+                            name="red"
+                            component={(value as RgbaColor).Rgba.red}
+                            onSave={() => {}}
+                        />
+                    </Topic>
+                    <Topic topic="y">
+                        <NumberComponentEditor
+                            name="green"
+                            component={(value as RgbaColor).Rgba.green}
+                            onSave={() => {}}
+                        />
+                    </Topic>
+                </VStack>
+                <VStack>
+                    <Topic topic="z">
+                        <NumberComponentEditor
+                            name="blue"
+                            component={(value as RgbaColor).Rgba.blue}
+                            onSave={() => {}}
+                        />
+                    </Topic>
+                    <NumberComponentEditor
+                        name="alpha"
+                        component={(value as RgbaColor).Rgba.alpha}
+                        onSave={() => {}}
+                    />
+                </VStack>
+            </HStack>
+            <TextInput label="HDR Intensity (×2ⁿ)" value="+0" />
+            <ColorWheel
+                value={value}
+                onChange={(value) => props.onSave(props.name, value)}
+            />
+        </div>
+    );
+}
+
 const PointLightComponentEditor = makeCompoundComponentEditor({
-    color: makeCompoundComponentEditor({
-        Rgba: makeCompoundComponentEditor({
-            red: NumberComponentEditor,
-            green: NumberComponentEditor,
-            blue: NumberComponentEditor,
-            alpha: NumberComponentEditor,
-        }),
-        RgbaLinear: makeCompoundComponentEditor({
-            hue: NumberComponentEditor,
-            saturation: NumberComponentEditor,
-            lightness: NumberComponentEditor,
-            alpha: NumberComponentEditor,
-        }),
-        Hsla: makeCompoundComponentEditor({
-            hue: NumberComponentEditor,
-            saturation: NumberComponentEditor,
-            lightness: NumberComponentEditor,
-            alpha: NumberComponentEditor,
-        }),
-        Lcha: makeCompoundComponentEditor({
-            lightness: NumberComponentEditor,
-            chroma: NumberComponentEditor,
-            hue: NumberComponentEditor,
-            alpha: NumberComponentEditor,
-        }),
-    }),
+    // color: makeCompoundComponentEditor({
+    //     Rgba: makeCompoundComponentEditor({
+    //         red: NumberComponentEditor,
+    //         green: NumberComponentEditor,
+    //         blue: NumberComponentEditor,
+    //         alpha: NumberComponentEditor,
+    //     }),
+    //     RgbaLinear: makeCompoundComponentEditor({
+    //         hue: NumberComponentEditor,
+    //         saturation: NumberComponentEditor,
+    //         lightness: NumberComponentEditor,
+    //         alpha: NumberComponentEditor,
+    //     }),
+    //     Hsla: makeCompoundComponentEditor({
+    //         hue: NumberComponentEditor,
+    //         saturation: NumberComponentEditor,
+    //         lightness: NumberComponentEditor,
+    //         alpha: NumberComponentEditor,
+    //     }),
+    //     Lcha: makeCompoundComponentEditor({
+    //         lightness: NumberComponentEditor,
+    //         chroma: NumberComponentEditor,
+    //         hue: NumberComponentEditor,
+    //         alpha: NumberComponentEditor,
+    //     }),
+    // }),
+    color: ColorComponentEditor,
     intensity: NumberComponentEditor,
     range: NumberComponentEditor,
     radius: NumberComponentEditor,
@@ -879,6 +948,19 @@ function makeCompoundComponentEditor(
             setComponentValue(updatedComponentValue);
             onSave(name, updatedComponentValue);
         }
+    };
+}
+
+function makeTopicComponentEditor(
+    topic: TopicName,
+    Editor: React.FC<ComponentEditorProps>,
+): React.FC<ComponentEditorProps> {
+    return function TopicComponentEditor(props: ComponentEditorProps) {
+        return (
+            <Topic topic={topic}>
+                <Editor {...props} />
+            </Topic>
+        );
     };
 }
 

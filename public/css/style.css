@@ -127,6 +127,21 @@ input[type="number"] {
     --contrast: var(--accent-code-contrast);
 }
 
+.topic\:x {
+    --accent: var(--accent-x);
+    --contrast: var(--accent-x-contrast);
+}
+
+.topic\:y {
+    --accent: var(--accent-y);
+    --contrast: var(--accent-y-contrast);
+}
+
+.topic\:z {
+    --accent: var(--accent-z);
+    --contrast: var(--accent-z-contrast);
+}
+
 .topic\:none {
     --accent: var(--surface-plus-1);
     --contrast: var(--surface-plus-1-contrast);
@@ -435,6 +450,7 @@ svg.lucide {
         max-width: 50%;
         text-transform: capitalize;
         white-space: nowrap;
+        z-index: 1;
     }
 
     &:focus-within {
@@ -588,8 +604,9 @@ svg.lucide {
     min-height: calc(var(--control-height));
     width: 100%;
     align-items: center;
-    justify-content: space-between;
+    justify-content: stretch;
     white-space: nowrap;
+    gap: var(--control-gap);
 
     border-radius: var(--control-radius);
     border: none;
@@ -619,6 +636,18 @@ svg.lucide {
         display: flex;
         align-items: center;
         gap: var(--control-gap);
+        flex-grow: 1;
+    }
+
+    label {
+        display: flex;
+        align-items: center;
+        gap: var(--control-gap);
+        flex-basis: 0;
+        flex-grow: 0;
+        color: var(--accent);
+        min-width: fit-content;
+        max-width: 50%;
     }
 }
 
@@ -944,5 +973,86 @@ a {
         color: var(--surface-minus-2-contrast);
         text-align: right;
         text-transform: capitalize;
+    }
+}
+
+.ColorWheel {
+    display: flex;
+    flex-shrink: 1;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--surface-minus-2);
+    border-radius: var(--control-radius);
+    padding: var(--control-gap);
+
+    .HueGradient {
+        position: relative;
+        width: 100%;
+        min-width: 0;
+        max-width: calc(var(--control-height) * 12);
+        aspect-ratio: 1;
+        padding: 6px;
+        background: linear-gradient(
+                var(--surface-minus-2),
+                var(--surface-minus-2)
+            ),
+            conic-gradient(
+                hsl(0, 100%, 50%) 0deg,
+                hsl(60, 100%, 50%) 60deg,
+                hsl(120, 100%, 50%) 120deg,
+                hsl(180, 100%, 50%) 180deg,
+                hsl(240, 100%, 50%) 240deg,
+                hsl(300, 100%, 50%) 300deg,
+                hsl(360, 100%, 50%) 360deg
+            );
+        background-clip: content-box, border-box;
+        border-radius: 100%;
+
+        .Handle {
+            left: 50%;
+            top: 3px;
+            background-color: red;
+        }
+    }
+
+    .SaturationGradient {
+        position: relative;
+        width: 63%;
+        max-width: calc(var(--control-height) * 12 * 0.63);
+        aspect-ratio: 1;
+
+        background: linear-gradient(
+            to right,
+            hsl(0, 0%, 50%),
+            hsl(0, 100%, 50%)
+        );
+    }
+
+    .LightnessGradient {
+        position: relative;
+        width: 63%;
+        max-width: calc(var(--control-height) * 12 * 0.63);
+        aspect-ratio: 1;
+        background: linear-gradient(
+            to top,
+            hsl(0, 0%, 0%),
+            transparent,
+            hsl(0, 0%, 100%)
+        );
+
+        .Handle {
+            background-color: white;
+        }
+    }
+
+    .Handle {
+        position: absolute;
+        width: calc(var(--control-height) * 0.5);
+        height: calc(var(--control-height) * 0.5);
+        border: 1px solid var(--surface-minus-1-contrast);
+        border-radius: 100%;
+        box-shadow: var(--shadow-high);
+        transform: translate(-50%, -50%);
     }
 }

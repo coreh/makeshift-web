@@ -11,6 +11,7 @@ interface HStackProps {
         | "start"
         | "center"
         | "end"
+        | "stretch"
         | "space-between"
         | "space-around"
         | "space-evenly";
