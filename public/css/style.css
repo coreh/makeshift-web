@@ -52,12 +52,24 @@
 
     font-size: 12px;
     color-scheme: dark;
+    background-color: red;
+    touch-action: none;
+    overflow: hidden;
+}
+
+/** touch screens, based on coarse pointer detection */
+@media (pointer: coarse) {
+    :root {
+        font-size: 16px;
+    }
 }
 
 * {
     box-sizing: border-box;
     min-width: 0; /* Makes flexbox more predictable */
     font-family: system-ui;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 *::selection {
@@ -67,14 +79,18 @@
 
 body {
     margin: 0;
-    background: var(--surface-0);
+    background-color: var(--surface-0);
     color: var(--surface-0-contrast);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 main {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100svh;
     padding: var(--control-gap);
 }
 
@@ -218,6 +234,21 @@ input[type="number"] {
     }
 }
 
+.RStack {
+    display: flex;
+    flex-direction: row;
+
+    &.gap {
+        gap: var(--control-gap);
+    }
+}
+
+@media (max-width: 480px) {
+    .RStack {
+        flex-direction: column;
+    }
+}
+
 .ZStack {
     display: grid;
 
@@ -340,6 +371,7 @@ svg.lucide {
     flex-grow: 1;
     flex-basis: 0;
     overflow: auto;
+    touch-action: pan-y;
 }
 
 .Panel {
@@ -350,7 +382,6 @@ svg.lucide {
     flex-direction: column;
     flex-grow: 1;
     flex-basis: 0;
-    overflow: auto;
     gap: var(--control-gap);
 }
 
@@ -375,6 +406,7 @@ svg.lucide {
     flex-basis: 0;
     overflow-y: auto;
     overflow-x: hidden;
+    touch-action: pan-y;
 }
 
 .ComponentInspector {
@@ -492,6 +524,7 @@ svg.lucide {
             url("../cursors/rotate.svg") 12 12,
             auto;
         box-shadow: var(--shadow-high) inset;
+        touch-action: none;
 
         &:focus {
             outline: 2px solid
@@ -527,6 +560,7 @@ svg.lucide {
             auto;
 
         box-shadow: var(--shadow-medium);
+        touch-action: none;
 
         &:focus {
             outline: 2px solid
@@ -996,6 +1030,7 @@ a {
         max-width: calc(var(--control-height) * 8);
         aspect-ratio: 1;
         border-radius: 100%;
+        touch-action: none;
 
         &:focus {
             outline: 2px solid
@@ -1030,6 +1065,7 @@ a {
         max-width: calc(var(--control-height) * 8 * 0.63);
         aspect-ratio: 1;
         display: grid;
+        touch-action: none;
 
         & > * {
             grid-area: 1 / 1 / 1 / 1;

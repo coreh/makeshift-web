@@ -9,6 +9,7 @@ import { VStack } from "./components/layout/VStack";
 import { Panel } from "./components/ui/Panel";
 import { HStack } from "./components/layout/HStack";
 import { Toolbar } from "./components/ui/Toolbar";
+import { RStack } from "./components/layout/RStack";
 
 export async function fetcher(obj: any) {
     const url = new URL(window.location.href);
@@ -44,14 +45,14 @@ function App() {
                 <Toolbar>
                     <Ping />
                 </Toolbar>
-                <HStack grow={1}>
-                    <Panel>
+                <RStack grow={1}>
+                    <Panel grow={1}>
                         <EntityTree />
                     </Panel>
-                    <Panel>
+                    <Panel grow={2}>
                         <Inspector />
                     </Panel>
-                </HStack>
+                </RStack>
             </VStack>
         </SWRConfig>
     );

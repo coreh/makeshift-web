@@ -1,0 +1,13 @@
+{
+    "name": "Makeshift Bevy Web Editor",
+    "short_name": "Bevy Editor",
+    "display": "standalone",
+    "icons": [
+        {
+            "src": "images/bevy-icon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#39393e"
+}
