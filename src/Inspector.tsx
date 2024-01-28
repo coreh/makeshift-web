@@ -316,29 +316,29 @@ export function UnserializableComponentEditor(props: ComponentEditorProps) {
 export function TransformComponentEditor(props: ComponentEditorProps) {
     const globalStore = useGlobalStore();
     const entity = globalStore.selection.first();
-    const [x, setX] = useState("");
-    const [y, setY] = useState("");
-    const [z, setZ] = useState("");
-    const [sx, setSX] = useState("");
-    const [sy, setSY] = useState("");
-    const [sz, setSZ] = useState("");
-    const [rx, setRX] = useState("");
-    const [ry, setRY] = useState("");
-    const [rz, setRZ] = useState("");
-    const [rw, setRW] = useState("");
+    const [x, setX] = useState(0);
+    const [y, setY] = useState(0);
+    const [z, setZ] = useState(0);
+    const [sx, setSX] = useState(0);
+    const [sy, setSY] = useState(0);
+    const [sz, setSZ] = useState(0);
+    const [rx, setRX] = useState(0);
+    const [ry, setRY] = useState(0);
+    const [rz, setRZ] = useState(0);
+    const [rw, setRW] = useState(0);
     const userInteraction = useRef(false);
 
     useEffect(() => {
-        setX(`${props.component.translation.x}`);
-        setY(`${props.component.translation.y}`);
-        setZ(`${props.component.translation.z}`);
-        setSX(`${props.component.scale.x}`);
-        setSY(`${props.component.scale.y}`);
-        setSZ(`${props.component.scale.z}`);
-        setRX(`${props.component.rotation.x}`);
-        setRY(`${props.component.rotation.y}`);
-        setRZ(`${props.component.rotation.z}`);
-        setRW(`${props.component.rotation.w}`);
+        setX(props.component.translation.x);
+        setY(props.component.translation.y);
+        setZ(props.component.translation.z);
+        setSX(props.component.scale.x);
+        setSY(props.component.scale.y);
+        setSZ(props.component.scale.z);
+        setRX(props.component.rotation.x);
+        setRY(props.component.rotation.y);
+        setRZ(props.component.rotation.z);
+        setRW(props.component.rotation.w);
     }, [entity, props.component]);
 
     useEffect(() => {
@@ -348,48 +348,24 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
 
         userInteraction.current = false;
 
-        let numberX = parseFloat(x);
-        let numberY = parseFloat(y);
-        let numberZ = parseFloat(z);
-        let numberSX = parseFloat(sx);
-        let numberSY = parseFloat(sy);
-        let numberSZ = parseFloat(sz);
-        let numberRX = parseFloat(rx);
-        let numberRY = parseFloat(ry);
-        let numberRZ = parseFloat(rz);
-        let numberRW = parseFloat(rw);
-
-        if (
-            !Number.isNaN(numberX) &&
-            !Number.isNaN(numberY) &&
-            !Number.isNaN(numberZ) &&
-            !Number.isNaN(numberSX) &&
-            !Number.isNaN(numberSY) &&
-            !Number.isNaN(numberSZ) &&
-            !Number.isNaN(numberRX) &&
-            !Number.isNaN(numberRY) &&
-            !Number.isNaN(numberRZ) &&
-            !Number.isNaN(numberRW)
-        ) {
-            props.onSave(props.name, {
-                translation: {
-                    x: numberX,
-                    y: numberY,
-                    z: numberZ,
-                },
-                scale: {
-                    x: numberSX,
-                    y: numberSY,
-                    z: numberSZ,
-                },
-                rotation: {
-                    x: numberRX,
-                    y: numberRY,
-                    z: numberRZ,
-                    w: numberRW,
-                },
-            });
-        }
+        props.onSave(props.name, {
+            translation: {
+                x,
+                y,
+                z,
+            },
+            scale: {
+                x: sx,
+                y: sy,
+                z: sz,
+            },
+            rotation: {
+                x: rx,
+                y: ry,
+                z: rz,
+                w: rw,
+            },
+        });
     }, [x, y, z, sx, sy, sz, rx, ry, rz, rw]);
 
     return (
@@ -397,17 +373,17 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
             <HStack>
                 <VStack grow={1}>
                     <label>Translation</label>
-                    <TextInput
+                    <NumberInput
                         label="X"
                         value={x}
                         onSave={(value) => handleChange(value, setX)}
                     />
-                    <TextInput
+                    <NumberInput
                         label="Y"
                         value={y}
                         onSave={(value) => handleChange(value, setY)}
                     />
-                    <TextInput
+                    <NumberInput
                         label="Z"
                         value={z}
                         onSave={(value) => handleChange(value, setZ)}
@@ -415,17 +391,17 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
                 </VStack>
                 <VStack grow={1}>
                     <label>Scale</label>
-                    <TextInput
+                    <NumberInput
                         label="SX"
                         value={sx}
                         onSave={(value) => handleChange(value, setSX)}
                     />
-                    <TextInput
+                    <NumberInput
                         label="SY"
                         value={sy}
                         onSave={(value) => handleChange(value, setSY)}
                     />
-                    <TextInput
+                    <NumberInput
                         label="SZ"
                         value={sz}
                         onSave={(value) => handleChange(value, setSZ)}
@@ -436,37 +412,37 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
                 <label>Rotation</label>
                 <HStack>
                     <VStack grow={1}>
-                        <TextInput
+                        <NumberInput
                             label="RX"
                             value={rx}
                             onSave={(value) => handleChange(value, setRX)}
                         />
-                        <TextInput
+                        <NumberInput
                             label="RY"
                             value={ry}
                             onSave={(value) => handleChange(value, setRY)}
                         />
-                        <TextInput
+                        <NumberInput
                             label="RZ"
                             value={rz}
                             onSave={(value) => handleChange(value, setRZ)}
                         />
-                        <TextInput
+                        <NumberInput
                             label="RW"
                             value={rw}
                             onSave={(value) => handleChange(value, setRW)}
                         />
                     </VStack>
                     <Trackball
-                        x={parseFloat(rx)}
-                        y={parseFloat(ry)}
-                        z={parseFloat(rz)}
-                        w={parseFloat(rw)}
+                        x={rx}
+                        y={ry}
+                        z={rz}
+                        w={rw}
                         onSave={(rx, ry, rz, rw) => {
-                            handleChange(rx.toString().slice(0, 9), setRX);
-                            handleChange(ry.toString().slice(0, 9), setRY);
-                            handleChange(rz.toString().slice(0, 9), setRZ);
-                            handleChange(rw.toString().slice(0, 9), setRW);
+                            handleChange(rx, setRX);
+                            handleChange(ry, setRY);
+                            handleChange(rz, setRZ);
+                            handleChange(rw, setRW);
                         }}
                     />
                 </HStack>
@@ -474,7 +450,7 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
         </div>
     );
 
-    function handleChange(value: string, setter: (value: string) => void) {
+    function handleChange(value: number, setter: (value: number) => void) {
         userInteraction.current = true;
         setter(value);
     }
