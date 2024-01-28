@@ -82,10 +82,38 @@ export function NumberInput(props: NumberInputProps) {
 
     const id = useId();
     const ref = useRef<HTMLInputElement>(null);
+    const isDraggingSlider = useRef(false);
+    const draggingSliderStartClientX = useRef(0);
+    const draggingSliderStartValue = useRef(0);
     const numberFormatter = Intl.NumberFormat("en", {
+        useGrouping: false,
         maximumFractionDigits: Math.max(-Math.log10(precision), 0),
     });
     const valueAsString: string = value ? numberFormatter.format(value) : "0";
+
+    let trackerLeft = 0;
+    let trackerRight = 0;
+    let showTracker = false;
+    if (min > -Infinity && max < Infinity) {
+        if (min >= 0 && max > 0) {
+            showTracker = true;
+            trackerLeft = 0;
+            trackerRight = (max - value) / (max - min);
+        } else if (min < 0 && max <= 0) {
+            showTracker = true;
+            trackerLeft = (value - min) / (max - min);
+            trackerRight = 0;
+        } else if (min < 0 && max > 0) {
+            showTracker = true;
+            if (value > 0) {
+                trackerLeft = 0.5;
+                trackerRight = (max - value) / (max - 0) / 2;
+            } else {
+                trackerLeft = (value - min) / (0 - min) / 2;
+                trackerRight = 0.5;
+            }
+        }
+    }
 
     useEffect(() => {
         if (ref.current) {
@@ -93,8 +121,26 @@ export function NumberInput(props: NumberInputProps) {
         }
     }, [value]);
 
+    useEffect(() => {
+        window.addEventListener("pointerup", handlePointerUp);
+        window.addEventListener("pointermove", handlePointerMove);
+        return () => {
+            window.removeEventListener("pointerup", handlePointerUp);
+            window.removeEventListener("pointermove", handlePointerMove);
+        };
+    }, [handlePointerUp, handlePointerMove]);
+
     return (
         <div className="NumberInput">
+            {showTracker && (
+                <div
+                    className="Tracker"
+                    style={{
+                        left: `${trackerLeft * 100}%`,
+                        right: `${trackerRight * 100}%`,
+                    }}
+                />
+            )}
             <label htmlFor={id}>{label}</label>
             <input
                 id={id}
@@ -127,8 +173,9 @@ export function NumberInput(props: NumberInputProps) {
     function handleSliderPointerDown(e: React.PointerEvent<HTMLDivElement>) {
         e.preventDefault();
         e.stopPropagation();
-        ref.current!.focus();
-        ref.current!.select();
+        isDraggingSlider.current = true;
+        draggingSliderStartClientX.current = e.clientX;
+        draggingSliderStartValue.current = value;
     }
 
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -179,5 +226,28 @@ export function NumberInput(props: NumberInputProps) {
         newValue = Math.min(Math.max(newValue, min), max);
         ref.current!.value = numberFormatter.format(newValue);
         onSave?.(newValue);
+    }
+
+    function handlePointerUp(e: PointerEvent) {
+        if (isDraggingSlider.current) {
+            e.preventDefault();
+            e.stopPropagation();
+            isDraggingSlider.current = false;
+            const deltaX = e.clientX - draggingSliderStartClientX.current;
+            const numSteps = Math.round(deltaX);
+            if (numSteps === 0) {
+                ref.current!.focus();
+                ref.current!.select();
+            }
+        }
+    }
+
+    function handlePointerMove(e: PointerEvent) {
+        if (isDraggingSlider.current) {
+            const deltaX = e.clientX - draggingSliderStartClientX.current;
+            const numSteps = Math.round(deltaX);
+            const newValue = draggingSliderStartValue.current + numSteps * step;
+            adjust(newValue - value);
+        }
     }
 }

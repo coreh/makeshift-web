@@ -376,16 +376,19 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
                     <NumberInput
                         label="X"
                         value={x}
+                        step={0.01}
                         onSave={(value) => handleChange(value, setX)}
                     />
                     <NumberInput
                         label="Y"
                         value={y}
+                        step={0.01}
                         onSave={(value) => handleChange(value, setY)}
                     />
                     <NumberInput
                         label="Z"
                         value={z}
+                        step={0.01}
                         onSave={(value) => handleChange(value, setZ)}
                     />
                 </VStack>
@@ -394,16 +397,19 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
                     <NumberInput
                         label="SX"
                         value={sx}
+                        step={0.01}
                         onSave={(value) => handleChange(value, setSX)}
                     />
                     <NumberInput
                         label="SY"
                         value={sy}
+                        step={0.01}
                         onSave={(value) => handleChange(value, setSY)}
                     />
                     <NumberInput
                         label="SZ"
                         value={sz}
+                        step={0.01}
                         onSave={(value) => handleChange(value, setSZ)}
                     />
                 </VStack>
@@ -415,21 +421,33 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
                         <NumberInput
                             label="RX"
                             value={rx}
+                            step={0.01}
+                            min={-1}
+                            max={1}
                             onSave={(value) => handleChange(value, setRX)}
                         />
                         <NumberInput
                             label="RY"
                             value={ry}
+                            step={0.01}
+                            min={-1}
+                            max={1}
                             onSave={(value) => handleChange(value, setRY)}
                         />
                         <NumberInput
                             label="RZ"
                             value={rz}
+                            step={0.01}
+                            min={-1}
+                            max={1}
                             onSave={(value) => handleChange(value, setRZ)}
                         />
                         <NumberInput
                             label="RW"
                             value={rw}
+                            step={0.01}
+                            min={-1}
+                            max={1}
                             onSave={(value) => handleChange(value, setRW)}
                         />
                     </VStack>
@@ -850,7 +868,41 @@ function ColorComponentEditor(props: ComponentEditorProps) {
                 linearColorspace={colorSpace === "RgbaLinear"}
                 onChange={handleWheelChange}
             />
-            {(colorSpace === "Rgba" || colorSpace === "RgbaLinear") && (
+            {colorSpace === "Rgba" && (
+                <HStack>
+                    <VStack grow={1}>
+                        <Topic topic="x">
+                            <NormNumberComponentEditor
+                                name="red"
+                                component={red}
+                                onSave={handleChannelSave}
+                            />
+                        </Topic>
+                        <Topic topic="y">
+                            <NormNumberComponentEditor
+                                name="green"
+                                component={green}
+                                onSave={handleChannelSave}
+                            />
+                        </Topic>
+                    </VStack>
+                    <VStack grow={1}>
+                        <Topic topic="z">
+                            <NormNumberComponentEditor
+                                name="blue"
+                                component={blue}
+                                onSave={handleChannelSave}
+                            />
+                        </Topic>
+                        <NormNumberComponentEditor
+                            name="alpha"
+                            component={alpha}
+                            onSave={handleChannelSave}
+                        />
+                    </VStack>
+                </HStack>
+            )}
+            {colorSpace === "RgbaLinear" && (
                 <HStack>
                     <VStack grow={1}>
                         <Topic topic="x">

@@ -474,6 +474,7 @@ svg.lucide {
     flex-grow: 1;
     gap: var(--control-gap);
     position: relative;
+    overflow: hidden;
 
     label {
         display: flex;
@@ -509,12 +510,21 @@ svg.lucide {
 .NumberInput {
     transition: 0.2s ease-in-out padding;
 
+    .Tracker {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        background: var(--accent);
+        opacity: 0.3;
+    }
+
     .Slider {
         position: absolute;
         top: 0;
         right: 0;
         bottom: 0;
         left: 0;
+        touch-action: pan-y;
     }
 
     input:focus + .Slider {
@@ -535,6 +545,7 @@ svg.lucide {
         transition: opacity 0.2s ease-in-out;
         padding-left: calc(var(--control-padding-x) / 2);
         padding-right: calc(var(--control-padding-x) / 2);
+        color: inherit;
 
         &:hover {
             background: var(--surface-minus-1);
