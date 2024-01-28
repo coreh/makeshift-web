@@ -43,7 +43,7 @@ function Ping() {
 }
 
 function ConnectionInfo() {
-    const { brpRequests } = useGlobalStore();
+    const brpRequests = useGlobalStore((store) => store.brpRequests);
     return (
         <HStack grow={1} shrink={0} align="center">
             <Ping />

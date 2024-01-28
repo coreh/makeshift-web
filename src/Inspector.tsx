@@ -32,14 +32,14 @@ import { Color } from "./utils/color";
 import { HDRIntensitySwatches } from "./components/ui/HDRIntensitySwatches";
 
 export function Inspector() {
-    const globalStore = useGlobalStore();
+    const selection = useGlobalStore((store) => store.selection);
 
     const { data, isLoading, error } = useSWR(
-        globalStore.selection.count() === 1
+        selection.count() === 1
             ? {
                   request: "GET",
                   params: {
-                      entity: globalStore.selection.first(),
+                      entity: selection.first(),
                       data: {
                           components: ["*"],
                       },
@@ -91,7 +91,7 @@ export function ComponentInspector({
     name,
     component,
 }: ComponentInspectorProps) {
-    const globalStore = useGlobalStore();
+    const selection = useGlobalStore((store) => store.selection);
 
     const { topic, Icon, label, ComponentEditor } = getComponentInfo(
         name,
@@ -131,7 +131,7 @@ export function ComponentInspector({
         fetcher({
             request: "INSERT",
             params: {
-                entity: globalStore.selection.first(),
+                entity: selection.first(),
                 components: {
                     [name]: serialize(component),
                 },
@@ -278,8 +278,8 @@ function getComponentInfo(name: string, component: any) {
 }
 
 export function GenericComponentEditor(props: ComponentEditorProps) {
-    const globalStore = useGlobalStore();
-    const entity = globalStore.selection.first();
+    const selection = useGlobalStore((store) => store.selection);
+    const entity = selection.first();
     const stringified = JSON.stringify(props.component, null, 4);
     const [text, setText] = useState("");
     useEffect(() => {
@@ -322,8 +322,8 @@ export function UnserializableComponentEditor(props: ComponentEditorProps) {
 }
 
 export function TransformComponentEditor(props: ComponentEditorProps) {
-    const globalStore = useGlobalStore();
-    const entity = globalStore.selection.first();
+    const selection = useGlobalStore((store) => store.selection);
+    const entity = selection.first();
     const [x, setX] = useState(0);
     const [y, setY] = useState(0);
     const [z, setZ] = useState(0);
@@ -705,8 +705,8 @@ const TonemappingComponentEditor = makeMultipleChoiceComponentEditor(
 );
 
 function BooleanComponentEditor(props: ComponentEditorProps) {
-    const globalStore = useGlobalStore();
-    const entity = globalStore.selection.first();
+    const selection = useGlobalStore((store) => store.selection);
+    const entity = selection.first();
     const [value, setValue] = useState(false);
 
     useEffect(() => {
@@ -728,8 +728,8 @@ function BooleanComponentEditor(props: ComponentEditorProps) {
 }
 
 function TextComponentEditor(props: ComponentEditorProps) {
-    const globalStore = useGlobalStore();
-    const entity = globalStore.selection.first();
+    const selection = useGlobalStore((store) => store.selection);
+    const entity = selection.first();
     const [value, setValue] = useState("");
     const userInteraction = useRef(false);
 
@@ -768,8 +768,8 @@ function makeNumberComponentEditor(config: {
     unit?: string;
 }) {
     return function NumberComponentEditor(props: ComponentEditorProps) {
-        const globalStore = useGlobalStore();
-        const entity = globalStore.selection.first();
+        const selection = useGlobalStore((store) => store.selection);
+        const entity = selection.first();
         const [value, setValue] = useState(0);
         const userInteraction = useRef(false);
 
@@ -862,8 +862,8 @@ const RadiansComponentEditor = makeNumberComponentEditor({
 
 function ColorComponentEditor(props: ComponentEditorProps) {
     const { name, component, onSave } = props;
-    const globalStore = useGlobalStore();
-    const entity = globalStore.selection.first();
+    const selection = useGlobalStore((store) => store.selection);
+    const entity = selection.first();
     const [value, setValue] = useState<Color>(props.component);
     const [intensity, setIntensity] = useState<number>(0);
     const hasCalculatedIntensity = useRef(false);
@@ -1230,8 +1230,8 @@ function makeMultipleChoiceComponentEditor(
 ): React.FC<ComponentEditorProps> {
     return function MultipleChoiceComponentEditor(props: ComponentEditorProps) {
         const { name, component, onSave } = props;
-        const globalStore = useGlobalStore();
-        const entity = globalStore.selection.first();
+        const selection = useGlobalStore((store) => store.selection);
+        const entity = selection.first();
 
         const [componentValue, setComponentValue] = useState(component);
 
@@ -1282,8 +1282,8 @@ function makeCompoundComponentEditor(
     return function CompoundComponentEditor(props: ComponentEditorProps) {
         const { name, component, onSave } = props;
 
-        const globalStore = useGlobalStore();
-        const entity = globalStore.selection.first();
+        const selection = useGlobalStore((store) => store.selection);
+        const entity = selection.first();
 
         const [componentValue, setComponentValue] = useState(component);
 

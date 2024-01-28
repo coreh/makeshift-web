@@ -65,7 +65,7 @@ function EntityTreeNode({ entity }: EntityTreeNodeProps) {
     const hasBeenOpen = useRef(false);
     const hasBeenHovered = useRef(false);
     const hasBeenFocused = useRef(false);
-    const globalStore = useGlobalStore();
+    const selection = useGlobalStore((state) => state.selection);
 
     if (isOpen) {
         hasBeenOpen.current = true;
@@ -108,9 +108,9 @@ function EntityTreeNode({ entity }: EntityTreeNodeProps) {
     return (
         <TreeNode open={isOpen} onOpenChange={setIsOpen}>
             <TreeHeading
-                isSelected={globalStore.selection.has(entity.entity)}
+                isSelected={selection.has(entity.entity)}
                 onClick={(e) => {
-                    globalStore.replaceSelection(entity.entity);
+                    useGlobalStore.getState().replaceSelection(entity.entity);
                 }}
                 onPointerOver={() => setIsHovered(true)}
                 onPointerOut={() => setIsHovered(false)}
