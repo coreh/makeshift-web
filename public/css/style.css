@@ -591,6 +591,10 @@ svg.lucide {
             outline: 2px solid
                 color-mix(in srgb, var(--highlight) 80%, transparent);
         }
+
+        @media (pointer: coarse) {
+            padding: calc(var(--control-gap) * 2.5);
+        }
     }
 
     .Ball {
