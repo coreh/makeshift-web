@@ -65,6 +65,7 @@ export interface NumberInputProps {
     max?: number;
     step?: number;
     precision?: number;
+    unit?: string;
     onSave?: (value: number) => void;
 }
 
@@ -76,15 +77,18 @@ export function NumberInput(props: NumberInputProps) {
         max = Infinity,
         min = -Infinity,
         step = 1,
+        unit,
         precision = 0.00001,
         onSave,
     } = props;
 
     const id = useId();
-    const ref = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const wrapperRef = useRef<HTMLInputElement>(null);
     const isDraggingSlider = useRef(false);
     const draggingSliderStartClientX = useRef(0);
     const draggingSliderStartValue = useRef(0);
+    const draggingSliderPointerId = useRef(0);
     const numberFormatter = Intl.NumberFormat("en", {
         useGrouping: false,
         maximumFractionDigits: Math.max(-Math.log10(precision), 0),
@@ -116,8 +120,8 @@ export function NumberInput(props: NumberInputProps) {
     }
 
     useEffect(() => {
-        if (ref.current) {
-            ref.current.value = valueAsString;
+        if (inputRef.current) {
+            inputRef.current.value = valueAsString;
         }
     }, [value]);
 
@@ -131,7 +135,7 @@ export function NumberInput(props: NumberInputProps) {
     }, [handlePointerUp, handlePointerMove]);
 
     return (
-        <div className="NumberInput">
+        <div ref={wrapperRef} className="NumberInput">
             {showTracker && (
                 <div
                     className="Tracker"
@@ -141,10 +145,10 @@ export function NumberInput(props: NumberInputProps) {
                     }}
                 />
             )}
-            <label htmlFor={id}>{label}</label>
+            {label && <label htmlFor={id}>{label}</label>}
             <input
                 id={id}
-                ref={ref}
+                ref={inputRef}
                 type="text"
                 inputMode="numeric"
                 placeholder={placeholder}
@@ -152,6 +156,7 @@ export function NumberInput(props: NumberInputProps) {
                 onFocus={handleFocus}
                 onBlur={handleBlur}
             />
+            {unit && <label htmlFor={id}>{unit}</label>}
             <div className="Slider" onPointerDown={handleSliderPointerDown} />
             <button
                 className="Decrement"
@@ -176,6 +181,9 @@ export function NumberInput(props: NumberInputProps) {
         isDraggingSlider.current = true;
         draggingSliderStartClientX.current = e.clientX;
         draggingSliderStartValue.current = value;
+        draggingSliderPointerId.current = e.pointerId;
+        wrapperRef.current!.tabIndex = 0;
+        wrapperRef.current!.focus();
     }
 
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -208,42 +216,49 @@ export function NumberInput(props: NumberInputProps) {
     }
 
     function reset() {
-        ref.current!.value = valueAsString;
+        inputRef.current!.value = valueAsString;
     }
 
     function save() {
-        let newValue = parseFloat(ref.current!.value);
+        let newValue = parseFloat(inputRef.current!.value);
         if (isNaN(newValue)) {
             reset();
         }
         newValue = Math.min(Math.max(newValue, min), max);
-        ref.current!.value = numberFormatter.format(newValue);
+        inputRef.current!.value = numberFormatter.format(newValue);
         onSave?.(newValue);
     }
 
     function adjust(amount: number) {
         let newValue = value + amount;
         newValue = Math.min(Math.max(newValue, min), max);
-        ref.current!.value = numberFormatter.format(newValue);
+        inputRef.current!.value = numberFormatter.format(newValue);
         onSave?.(newValue);
     }
 
     function handlePointerUp(e: PointerEvent) {
         if (isDraggingSlider.current) {
+            if (e.pointerId !== draggingSliderPointerId.current) {
+                return;
+            }
             e.preventDefault();
             e.stopPropagation();
             isDraggingSlider.current = false;
+            wrapperRef.current!.tabIndex = -1;
             const deltaX = e.clientX - draggingSliderStartClientX.current;
             const numSteps = Math.round(deltaX);
             if (numSteps === 0) {
-                ref.current!.focus();
-                ref.current!.select();
+                inputRef.current!.focus();
+                inputRef.current!.select();
             }
         }
     }
 
     function handlePointerMove(e: PointerEvent) {
         if (isDraggingSlider.current) {
+            if (e.pointerId !== draggingSliderPointerId.current) {
+                return;
+            }
             const deltaX = e.clientX - draggingSliderStartClientX.current;
             const numSteps = Math.round(deltaX);
             const newValue = draggingSliderStartValue.current + numSteps * step;

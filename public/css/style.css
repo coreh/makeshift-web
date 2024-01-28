@@ -472,22 +472,24 @@ svg.lucide {
     padding-right: var(--control-padding-x);
     border-radius: var(--control-radius);
     flex-grow: 1;
-    gap: var(--control-gap);
+    gap: calc(var(--control-gap) / 2);
     position: relative;
     overflow: hidden;
 
     label {
         display: flex;
-        font-size: 0.8rem;
         color: var(--accent);
         align-items: center;
-        padding-left: var(--control-padding-x);
         flex-grow: 0;
         flex-basis: content;
         max-width: 50%;
-        text-transform: capitalize;
         white-space: nowrap;
         z-index: 1;
+    }
+
+    label:first-of-type {
+        font-size: 0.8rem;
+        text-transform: capitalize;
     }
 
     &:focus-within {

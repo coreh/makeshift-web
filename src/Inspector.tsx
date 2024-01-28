@@ -377,18 +377,21 @@ export function TransformComponentEditor(props: ComponentEditorProps) {
                         label="X"
                         value={x}
                         step={0.01}
+                        unit="m"
                         onSave={(value) => handleChange(value, setX)}
                     />
                     <NumberInput
                         label="Y"
                         value={y}
                         step={0.01}
+                        unit="m"
                         onSave={(value) => handleChange(value, setY)}
                     />
                     <NumberInput
                         label="Z"
                         value={z}
                         step={0.01}
+                        unit="m"
                         onSave={(value) => handleChange(value, setZ)}
                     />
                 </VStack>
@@ -721,6 +724,7 @@ function makeNumberComponentEditor(config: {
     max?: number;
     step?: number;
     precision?: number;
+    unit?: string;
 }) {
     return function NumberComponentEditor(props: ComponentEditorProps) {
         const globalStore = useGlobalStore();
@@ -749,6 +753,7 @@ function makeNumberComponentEditor(config: {
                     max={config.max}
                     step={config.step}
                     precision={config.precision}
+                    unit={config.unit}
                     value={value}
                     onSave={(value) => {
                         userInteraction.current = true;
@@ -761,6 +766,33 @@ function makeNumberComponentEditor(config: {
 }
 
 const NumberComponentEditor = makeNumberComponentEditor({});
+const HDRIntensityComponentEditor = makeNumberComponentEditor({
+    min: -25,
+    max: 25,
+    step: 0.01,
+});
+const IlluminanceComponentEditor = makeNumberComponentEditor({
+    min: 0,
+    step: 100,
+    unit: "lx",
+});
+const LuminousFluxComponentEditor = makeNumberComponentEditor({
+    min: 0,
+    step: 10,
+    unit: "lm",
+});
+const ShadowNormalBiasComponentEditor = makeNumberComponentEditor({
+    step: 0.001,
+    unit: "txl",
+});
+const ShadowDepthBiasComponentEditor = makeNumberComponentEditor({
+    step: 0.001,
+});
+const LengthComponentEditor = makeNumberComponentEditor({
+    min: 0,
+    step: 0.01,
+    unit: "m",
+});
 const IntComponentEditor = makeNumberComponentEditor({
     precision: 1,
 });
@@ -777,6 +809,13 @@ const DegreesComponentEditor = makeNumberComponentEditor({
     step: 1,
     min: 0,
     max: 360,
+    unit: "°",
+});
+const RadiansComponentEditor = makeNumberComponentEditor({
+    step: 0.01,
+    min: 0,
+    max: Math.PI * 2,
+    unit: "rad",
 });
 
 function ColorComponentEditor(props: ComponentEditorProps) {
@@ -976,8 +1015,8 @@ function ColorComponentEditor(props: ComponentEditorProps) {
             {colorSpace === "RgbaLinear" && (
                 <VStack>
                     <HStack>
-                        <NumberComponentEditor
-                            name="HDR Intensity (×2ⁿ)"
+                        <HDRIntensityComponentEditor
+                            name="HDR Log₂ Intensity"
                             component={intensity}
                             onSave={handleIntensitySave}
                         />
@@ -1111,32 +1150,32 @@ function ColorComponentEditor(props: ComponentEditorProps) {
 
 const PointLightComponentEditor = makeCompoundComponentEditor({
     color: ColorComponentEditor,
-    intensity: NumberComponentEditor,
-    range: NumberComponentEditor,
-    radius: NumberComponentEditor,
+    intensity: LuminousFluxComponentEditor,
+    range: LengthComponentEditor,
+    radius: LengthComponentEditor,
     shadows_enabled: BooleanComponentEditor,
-    shadow_depth_bias: NumberComponentEditor,
-    shadow_normal_bias: NumberComponentEditor,
+    shadow_depth_bias: ShadowDepthBiasComponentEditor,
+    shadow_normal_bias: ShadowNormalBiasComponentEditor,
 });
 
 const SpotLightComponentEditor = makeCompoundComponentEditor({
     color: ColorComponentEditor,
-    intensity: NumberComponentEditor,
-    range: NumberComponentEditor,
-    radius: NumberComponentEditor,
+    intensity: LuminousFluxComponentEditor,
+    range: LengthComponentEditor,
+    radius: LengthComponentEditor,
     shadows_enabled: BooleanComponentEditor,
-    shadow_depth_bias: NumberComponentEditor,
-    shadow_normal_bias: NumberComponentEditor,
-    outer_angle: NumberComponentEditor,
-    inner_angle: NumberComponentEditor,
+    shadow_depth_bias: ShadowDepthBiasComponentEditor,
+    shadow_normal_bias: ShadowNormalBiasComponentEditor,
+    outer_angle: RadiansComponentEditor,
+    inner_angle: RadiansComponentEditor,
 });
 
 const DirectionalLightComponentEditor = makeCompoundComponentEditor({
     color: ColorComponentEditor,
-    illuminance: NumberComponentEditor,
+    illuminance: IlluminanceComponentEditor,
     shadows_enabled: BooleanComponentEditor,
-    shadow_depth_bias: NumberComponentEditor,
-    shadow_normal_bias: NumberComponentEditor,
+    shadow_depth_bias: ShadowDepthBiasComponentEditor,
+    shadow_normal_bias: ShadowNormalBiasComponentEditor,
 });
 
 function makeMultipleChoiceComponentEditor(
