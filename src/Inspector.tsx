@@ -120,6 +120,7 @@ export function ComponentInspector({
                         name={name}
                         component={component}
                         onSave={handleSave}
+                        isRoot
                     />
                 </div>
             )}
@@ -143,6 +144,7 @@ interface ComponentEditorProps {
     name: string;
     component: any;
     onSave: (name: string, component: any) => void;
+    isRoot?: boolean;
 }
 
 function getComponentSortingPriority(name: string, component: any) {
@@ -165,10 +167,12 @@ function getComponentSortingPriority(name: string, component: any) {
     }
 
     switch (name) {
-        case "bevy_transform::components::transform::Transform":
+        case "bevy_core::name::Name":
             return -100;
-        case "bevy_render::view::visibility::Visibility":
+        case "bevy_transform::components::transform::Transform":
             return -90;
+        case "bevy_render::view::visibility::Visibility":
+            return -80;
     }
 
     return 0;
@@ -188,6 +192,10 @@ function getComponentInfo(name: string, component: any) {
         case "bevy_hierarchy::components::parent::Parent":
             Icon = Lucide.CornerLeftUp;
             label = "Hierarchy";
+            break;
+        case "bevy_core::name::Name":
+            Icon = Lucide.Milestone;
+            ComponentEditor = TextComponentEditor;
             break;
         case "bevy_render::view::visibility::InheritedVisibility":
         case "bevy_render::view::visibility::ViewVisibility":
@@ -719,6 +727,39 @@ function BooleanComponentEditor(props: ComponentEditorProps) {
     );
 }
 
+function TextComponentEditor(props: ComponentEditorProps) {
+    const globalStore = useGlobalStore();
+    const entity = globalStore.selection.first();
+    const [value, setValue] = useState("");
+    const userInteraction = useRef(false);
+
+    useEffect(() => {
+        setValue(props.component);
+    }, [entity, props.component]);
+
+    useEffect(() => {
+        if (!userInteraction.current) {
+            return;
+        }
+
+        userInteraction.current = false;
+        props.onSave(props.name, value);
+    }, [value]);
+
+    return (
+        <div className="ComponentEditor">
+            <TextInput
+                label={props.isRoot ? undefined : prettifyName(props.name)}
+                value={value}
+                onSave={(value) => {
+                    userInteraction.current = true;
+                    setValue(value);
+                }}
+            />
+        </div>
+    );
+}
+
 function makeNumberComponentEditor(config: {
     min?: number;
     max?: number;
@@ -787,6 +828,7 @@ const ShadowNormalBiasComponentEditor = makeNumberComponentEditor({
 });
 const ShadowDepthBiasComponentEditor = makeNumberComponentEditor({
     step: 0.001,
+    unit: "m",
 });
 const LengthComponentEditor = makeNumberComponentEditor({
     min: 0,

@@ -490,6 +490,7 @@ svg.lucide {
     label:first-of-type {
         font-size: 0.8rem;
         text-transform: capitalize;
+        margin-right: calc(var(--control-gap) / 2);
     }
 
     &:focus-within {
@@ -499,7 +500,6 @@ svg.lucide {
 
     input {
         display: flex;
-        text-align: end;
         flex-grow: 1;
         padding: 0;
 
@@ -511,6 +511,10 @@ svg.lucide {
 
 .NumberInput {
     transition: 0.2s ease-in-out padding;
+
+    input {
+        text-align: end;
+    }
 
     .Tracker {
         position: absolute;
