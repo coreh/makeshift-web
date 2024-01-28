@@ -14,7 +14,7 @@ import { VStack } from "./components/layout/VStack";
 import { HStack } from "./components/layout/HStack";
 import cn from "classnames";
 import * as Lucide from "lucide-react";
-import { TextInput } from "./components/ui/Input";
+import { NumberInput, TextInput } from "./components/ui/Input";
 import { Trackball } from "./components/ui/Trackball";
 import {
     Select,
@@ -722,45 +722,68 @@ function BooleanComponentEditor(props: ComponentEditorProps) {
     );
 }
 
-function NumberComponentEditor(props: ComponentEditorProps) {
-    const globalStore = useGlobalStore();
-    const entity = globalStore.selection.first();
-    const [value, setValue] = useState("");
-    const userInteraction = useRef(false);
+function makeNumberComponentEditor(config: {
+    min?: number;
+    max?: number;
+    step?: number;
+    precision?: number;
+}) {
+    return function NumberComponentEditor(props: ComponentEditorProps) {
+        const globalStore = useGlobalStore();
+        const entity = globalStore.selection.first();
+        const [value, setValue] = useState(0);
+        const userInteraction = useRef(false);
 
-    useEffect(() => {
-        setValue(`${props.component}`);
-    }, [entity, props.component]);
+        useEffect(() => {
+            setValue(props.component);
+        }, [entity, props.component]);
 
-    useEffect(() => {
-        if (!userInteraction.current) {
-            return;
-        }
+        useEffect(() => {
+            if (!userInteraction.current) {
+                return;
+            }
 
-        userInteraction.current = false;
+            userInteraction.current = false;
+            props.onSave(props.name, value);
+        }, [value]);
 
-        let number = parseFloat(value);
-
-        if (!Number.isNaN(number)) {
-            props.onSave(props.name, number);
-        }
-    }, [value]);
-
-    return (
-        <div className="ComponentEditor">
-            <TextInput
-                label={prettifyName(props.name)}
-                value={value}
-                onSave={(value) => {
-                    userInteraction.current = true;
-                    setValue(value);
-                }}
-            />
-        </div>
-    );
+        return (
+            <div className="ComponentEditor">
+                <NumberInput
+                    label={prettifyName(props.name)}
+                    min={config.min}
+                    max={config.max}
+                    step={config.step}
+                    precision={config.precision}
+                    value={value}
+                    onSave={(value) => {
+                        userInteraction.current = true;
+                        setValue(value);
+                    }}
+                />
+            </div>
+        );
+    };
 }
 
-const COLOR_ROUND_PRECISION = 100_000;
+const NumberComponentEditor = makeNumberComponentEditor({});
+const IntComponentEditor = makeNumberComponentEditor({
+    precision: 1,
+});
+const NormNumberComponentEditor = makeNumberComponentEditor({
+    step: 0.01,
+    min: 0,
+    max: 1,
+});
+const PositiveNumberComponentEditor = makeNumberComponentEditor({
+    step: 0.01,
+    min: 0,
+});
+const DegreesComponentEditor = makeNumberComponentEditor({
+    step: 1,
+    min: 0,
+    max: 360,
+});
 
 function ColorComponentEditor(props: ComponentEditorProps) {
     const { name, component, onSave } = props;
@@ -780,20 +803,10 @@ function ColorComponentEditor(props: ComponentEditorProps) {
                 hasCalculatedIntensity.current = true;
                 const [extractedValue, extractedIntensity] =
                     Color.extractHdrIntensity(component);
-                setValue(
-                    Color.roundPrecision(extractedValue, COLOR_ROUND_PRECISION),
-                );
-                setIntensity(
-                    Math.round(extractedIntensity * COLOR_ROUND_PRECISION) /
-                        COLOR_ROUND_PRECISION,
-                );
+                setValue(extractedValue);
+                setIntensity(extractedIntensity);
             } else {
-                setValue(
-                    Color.roundPrecision(
-                        Color.atHdrIntensity(component, intensity),
-                        COLOR_ROUND_PRECISION,
-                    ),
-                );
+                setValue(Color.atHdrIntensity(component, intensity));
             }
         } else {
             setValue(component);
@@ -865,14 +878,14 @@ function ColorComponentEditor(props: ComponentEditorProps) {
                 <HStack>
                     <VStack grow={1}>
                         <Topic topic="x">
-                            <NumberComponentEditor
+                            <PositiveNumberComponentEditor
                                 name="red"
                                 component={red}
                                 onSave={handleChannelSave}
                             />
                         </Topic>
                         <Topic topic="y">
-                            <NumberComponentEditor
+                            <PositiveNumberComponentEditor
                                 name="green"
                                 component={green}
                                 onSave={handleChannelSave}
@@ -881,13 +894,13 @@ function ColorComponentEditor(props: ComponentEditorProps) {
                     </VStack>
                     <VStack grow={1}>
                         <Topic topic="z">
-                            <NumberComponentEditor
+                            <PositiveNumberComponentEditor
                                 name="blue"
                                 component={blue}
                                 onSave={handleChannelSave}
                             />
                         </Topic>
-                        <NumberComponentEditor
+                        <NormNumberComponentEditor
                             name="alpha"
                             component={alpha}
                             onSave={handleChannelSave}
@@ -898,20 +911,20 @@ function ColorComponentEditor(props: ComponentEditorProps) {
             {(colorSpace === "Hsla" || colorSpace === "Lcha") && (
                 <HStack>
                     <VStack grow={1}>
-                        <NumberComponentEditor
+                        <DegreesComponentEditor
                             name="hue"
                             component={hue}
                             onSave={handleChannelSave}
                         />
                         {colorSpace === "Lcha" && (
-                            <NumberComponentEditor
+                            <NormNumberComponentEditor
                                 name="chroma"
                                 component={chroma}
                                 onSave={handleChannelSave}
                             />
                         )}
                         {colorSpace === "Hsla" && (
-                            <NumberComponentEditor
+                            <NormNumberComponentEditor
                                 name="saturation"
                                 component={saturation}
                                 onSave={handleChannelSave}
@@ -919,12 +932,12 @@ function ColorComponentEditor(props: ComponentEditorProps) {
                         )}
                     </VStack>
                     <VStack grow={1}>
-                        <NumberComponentEditor
+                        <NormNumberComponentEditor
                             name="lightness"
                             component={lightness}
                             onSave={handleChannelSave}
                         />
-                        <NumberComponentEditor
+                        <NormNumberComponentEditor
                             name="alpha"
                             component={alpha}
                             onSave={handleChannelSave}
@@ -980,12 +993,9 @@ function ColorComponentEditor(props: ComponentEditorProps) {
                         [nestedName]: nestedComponent,
                     },
                 };
-                result = Color.roundPrecision(
-                    Color.toRhsColorspace(
-                        Color.injectHdrIntensity(result, intensity),
-                        value,
-                    ),
-                    COLOR_ROUND_PRECISION,
+                result = Color.toRhsColorspace(
+                    Color.injectHdrIntensity(result, intensity),
+                    value,
                 );
                 break;
             case "Hsla":
@@ -1035,15 +1045,11 @@ function ColorComponentEditor(props: ComponentEditorProps) {
             default:
                 throw new Error(`Unknown color space`);
         }
-        result = Color.roundPrecision(result, COLOR_ROUND_PRECISION);
         onSave(name, result);
     }
 
     function handleIntensitySave(_nestedName: string, intensity: number) {
-        const updatedValue = Color.roundPrecision(
-            Color.injectHdrIntensity(value, intensity),
-            COLOR_ROUND_PRECISION,
-        );
+        const updatedValue = Color.injectHdrIntensity(value, intensity);
         setValue(updatedValue);
         setIntensity(intensity);
         onSave(name, updatedValue);
@@ -1053,23 +1059,16 @@ function ColorComponentEditor(props: ComponentEditorProps) {
         const [extractedValue, extractedIntensity] =
             Color.extractHdrIntensity(color);
         setValue(extractedValue);
-        setIntensity(
-            Math.round(extractedIntensity * COLOR_ROUND_PRECISION) /
-                COLOR_ROUND_PRECISION,
-        );
+        setIntensity(extractedIntensity);
         let result = Color.toRhsColorspace(color, value);
-        result = Color.roundPrecision(result, COLOR_ROUND_PRECISION);
         onSave(name, result);
     }
 
     function handleIntensityRecalculate() {
         const [extractedValue, extractedIntensity] =
             Color.extractHdrIntensity(component);
-        setValue(Color.roundPrecision(extractedValue, COLOR_ROUND_PRECISION));
-        setIntensity(
-            Math.round(extractedIntensity * COLOR_ROUND_PRECISION) /
-                COLOR_ROUND_PRECISION,
-        );
+        setValue(extractedValue);
+        setIntensity(extractedIntensity);
     }
 
     function handleWheelChange(value: Color) {
@@ -1077,7 +1076,6 @@ function ColorComponentEditor(props: ComponentEditorProps) {
         if (intensity > 0) {
             result = Color.injectHdrIntensity(result, intensity);
         }
-        result = Color.roundPrecision(result, COLOR_ROUND_PRECISION);
         setValue(result);
         onSave(name, result);
     }

@@ -463,7 +463,8 @@ svg.lucide {
     }
 }
 
-.TextInput {
+.TextInput,
+.NumberInput {
     display: flex;
     height: var(--control-height);
     background-color: var(--surface-minus-2);
@@ -472,6 +473,7 @@ svg.lucide {
     border-radius: var(--control-radius);
     flex-grow: 1;
     gap: var(--control-gap);
+    position: relative;
 
     label {
         display: flex;
@@ -501,6 +503,65 @@ svg.lucide {
         &:focus {
             outline: none;
         }
+    }
+}
+
+.NumberInput {
+    transition: 0.2s ease-in-out padding;
+
+    .Slider {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+
+    input:focus + .Slider {
+        pointer-events: none;
+    }
+
+    .Increment,
+    .Decrement {
+        appearance: none;
+        z-index: 5;
+        border: none;
+        background: none;
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+        padding-left: calc(var(--control-padding-x) / 2);
+        padding-right: calc(var(--control-padding-x) / 2);
+
+        &:hover {
+            background: var(--surface-minus-1);
+        }
+    }
+
+    &:hover,
+    &:focus-within {
+        padding-right: calc(var(--control-padding-x) * 3.5);
+        padding-left: calc(var(--control-padding-x) * 2.5);
+
+        .Increment,
+        .Decrement {
+            opacity: 1;
+        }
+    }
+
+    .Increment {
+        top: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    .Decrement {
+        top: 0;
+        left: 0;
+        bottom: 0;
     }
 }
 

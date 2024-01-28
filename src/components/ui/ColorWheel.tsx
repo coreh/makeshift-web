@@ -81,8 +81,8 @@ export function ColorWheel(props: ColorWheelProps) {
                     <div
                         className="Handle SaturationLightness"
                         style={{
-                            top: `${100 - lightness * 100}%`,
-                            left: `${saturation * 100}%`,
+                            top: `${100 - Math.min(Math.max(lightness, 0), 1) * 100}%`,
+                            left: `${Math.min(Math.max(0, saturation), 1) * 100}%`,
                             background: linearColorspace
                                 ? `color(srgb-linear ${red} ${green} ${blue})`
                                 : `color(srgb ${red} ${green} ${blue})`,

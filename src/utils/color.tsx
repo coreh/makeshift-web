@@ -40,8 +40,14 @@ export namespace Color {
     export function extractHdrIntensity(
         color: Color,
     ): [RgbaLinearColor, number] {
-        const { red, green, blue, alpha } =
-            Color.toRgbaLinear(color).RgbaLinear;
+        let linearColor;
+        const { red, green, blue, alpha } = (linearColor =
+            Color.toRgbaLinear(color)).RgbaLinear;
+
+        if (red < 0 || green < 0 || blue < 0) {
+            return [linearColor, 0];
+        }
+
         const l = Math.max(red, green, blue);
         if (l === 0) {
             return [Color.rgbaLinear(0, 0, 0, alpha), 0];
@@ -63,8 +69,14 @@ export namespace Color {
         color: Color,
         intensity: number,
     ): RgbaLinearColor {
-        const { red, green, blue, alpha } =
-            Color.toRgbaLinear(color).RgbaLinear;
+        let linearColor;
+        const { red, green, blue, alpha } = (linearColor =
+            Color.toRgbaLinear(color)).RgbaLinear;
+
+        if (red < 0 || green < 0 || blue < 0) {
+            return linearColor;
+        }
+
         const l = Math.pow(2, intensity);
         return {
             RgbaLinear: {
@@ -77,8 +89,13 @@ export namespace Color {
     }
 
     export function atHdrIntensity(color: Color, intensity: number): Color {
-        const { red, green, blue, alpha } =
-            Color.toRgbaLinear(color).RgbaLinear;
+        let linearColor;
+        const { red, green, blue, alpha } = (linearColor =
+            Color.toRgbaLinear(color)).RgbaLinear;
+
+        if (red < 0 || green < 0 || blue < 0) {
+            return linearColor;
+        }
 
         const l = Math.pow(2, intensity);
         return {
@@ -105,10 +122,10 @@ export namespace Color {
                 const { red, green, blue, alpha } = color.Rgba;
                 return {
                     Rgba: {
-                        red: Math.round(red * precision) / precision,
-                        green: Math.round(green * precision) / precision,
-                        blue: Math.round(blue * precision) / precision,
-                        alpha: Math.round(alpha * precision) / precision,
+                        red: Math.round(red / precision) * precision,
+                        green: Math.round(green / precision) * precision,
+                        blue: Math.round(blue / precision) * precision,
+                        alpha: Math.round(alpha / precision) * precision,
                     },
                 };
             }
@@ -116,10 +133,10 @@ export namespace Color {
                 const { red, green, blue, alpha } = color.RgbaLinear;
                 return {
                     RgbaLinear: {
-                        red: Math.round(red * precision) / precision,
-                        green: Math.round(green * precision) / precision,
-                        blue: Math.round(blue * precision) / precision,
-                        alpha: Math.round(alpha * precision) / precision,
+                        red: Math.round(red / precision) * precision,
+                        green: Math.round(green / precision) * precision,
+                        blue: Math.round(blue / precision) * precision,
+                        alpha: Math.round(alpha / precision) * precision,
                     },
                 };
             }
@@ -127,12 +144,12 @@ export namespace Color {
                 const { hue, saturation, lightness, alpha } = color.Hsla;
                 return {
                     Hsla: {
-                        hue: Math.round(hue * precision) / precision,
+                        hue: Math.round(hue / precision) * precision,
                         saturation:
-                            Math.round(saturation * precision) / precision,
+                            Math.round(saturation / precision) * precision,
                         lightness:
-                            Math.round(lightness * precision) / precision,
-                        alpha: Math.round(alpha * precision) / precision,
+                            Math.round(lightness / precision) * precision,
+                        alpha: Math.round(alpha / precision) * precision,
                     },
                 };
             }
@@ -141,10 +158,10 @@ export namespace Color {
                 return {
                     Lcha: {
                         lightness:
-                            Math.round(lightness * precision) / precision,
-                        chroma: Math.round(chroma * precision) / precision,
-                        hue: Math.round(hue * precision) / precision,
-                        alpha: Math.round(alpha * precision) / precision,
+                            Math.round(lightness / precision) * precision,
+                        chroma: Math.round(chroma / precision) * precision,
+                        hue: Math.round(hue / precision) * precision,
+                        alpha: Math.round(alpha / precision) * precision,
                     },
                 };
             }

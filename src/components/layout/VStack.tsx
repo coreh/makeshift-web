@@ -21,7 +21,7 @@ interface VStackProps {
 export function VStack({
     grow = 0,
     shrink = 1,
-    basis = "auto",
+    basis = 0,
     align = "stretch",
     gap = "auto",
     justify = "start",
