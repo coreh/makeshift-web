@@ -264,6 +264,7 @@ input[type="number"] {
     color: var(--text);
     height: var(--control-height);
     gap: var(--control-gap);
+    flex-shrink: 0;
 
     &::before {
         content: "●";

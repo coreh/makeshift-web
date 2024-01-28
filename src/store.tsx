@@ -7,6 +7,9 @@ export interface GlobalStore {
     addToSelection: (entity: string | Immutable.Set<string>) => void;
     removeFromSelection: (entity: string | Immutable.Set<string>) => void;
     toggleSelection: (entity: string) => void;
+
+    brpRequests: Immutable.Map<string, number>;
+    incrementBrpRequest: (request: string) => void;
 }
 
 export const useGlobalStore = create<GlobalStore>((set) => ({
@@ -38,5 +41,15 @@ export const useGlobalStore = create<GlobalStore>((set) => ({
                 ? state.selection.remove(entity)
                 : state.selection.add(entity),
         }));
+    },
+
+    brpRequests: Immutable.Map(),
+    incrementBrpRequest: (request: string) => {
+        set((state) => {
+            const count = state.brpRequests.get(request) ?? 0;
+            return {
+                brpRequests: state.brpRequests.set(request, count + 1),
+            };
+        });
     },
 }));
