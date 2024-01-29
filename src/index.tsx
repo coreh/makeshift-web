@@ -1,6 +1,6 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom/client";
-import useSWR, { SWRConfig } from "swr";
+import useSWR, { SWRConfig, mutate } from "swr";
 
 import { Status } from "./components/ui/Status";
 import { EntityTree } from "./EntityTree";
@@ -12,12 +12,20 @@ import { Toolbar } from "./components/ui/Toolbar";
 import { RStack } from "./components/layout/RStack";
 import { useGlobalStore } from "./store";
 import { Engine, sendRequest } from "./Engine";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "./components/ui/Select";
+import * as Lucide from "lucide-react";
 
-export async function httpFetcher(obj: any) {
+export async function httpFetcher(obj: any, url: string) {
     useGlobalStore.getState().incrementBrpRequest(obj.request);
 
-    const url = new URL(window.location.href);
-    const res = await fetch(`http://${url.hostname}:8765/brp`, {
+    const res = await fetch(url, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -34,10 +42,23 @@ export async function httpFetcher(obj: any) {
 
 let id = 0;
 export async function wasmFetcher(obj: any) {
+    useGlobalStore.getState().incrementBrpRequest(obj.request);
     return await sendRequest({ ...obj, id: id++ });
 }
 
-export const fetcher = wasmFetcher;
+export async function fetcher(obj: any) {
+    const target = useGlobalStore.getState().target;
+    if (target === "http") {
+        return await httpFetcher(
+            obj,
+            `//${new URL(window.location.href).hostname}:8765/brp`,
+        );
+    } else if (target === "http-local") {
+        return await httpFetcher(obj, `//localhost:8765/brp`);
+    } else if (target === "wasm") {
+        return await wasmFetcher(obj);
+    }
+}
 
 function Ping() {
     const { isLoading, error } = useSWR(
@@ -53,14 +74,14 @@ function Ping() {
 function ConnectionInfo() {
     const brpRequests = useGlobalStore((store) => store.brpRequests);
     return (
-        <HStack grow={1} shrink={0} align="center">
-            <Ping />
+        <HStack grow={1} shrink={0} basis="auto" align="center">
+            <Ping />/
             {brpRequests
                 .entrySeq()
                 .map(([request, count]) => (
-                    <div key={request}>
+                    <small key={request}>
                         {request} ({count})
-                    </div>
+                    </small>
                 ))
                 .toArray()}
         </HStack>
@@ -68,20 +89,63 @@ function ConnectionInfo() {
 }
 
 function App() {
+    const target = useGlobalStore((store) => store.target);
+
+    useEffect(() => {
+        useGlobalStore.getState().resetBrpRequests();
+        mutate(() => true, undefined, {
+            revalidate: true,
+        });
+    }, [target]);
+
     return (
         <SWRConfig value={{ fetcher }}>
             <VStack grow={1}>
                 <Toolbar>
-                    <ConnectionInfo />
+                    <RStack justify="space-between" grow={1}>
+                        <ConnectionInfo />
+                        <HStack grow={0} shrink={0} basis="auto" align="center">
+                            <Select
+                                value={target}
+                                onValueChange={(value) => {
+                                    useGlobalStore
+                                        .getState()
+                                        .setTarget(
+                                            value as
+                                                | "http"
+                                                | "http-local"
+                                                | "wasm",
+                                        );
+                                }}
+                            >
+                                <SelectTrigger>
+                                    <label>Target</label>
+                                    <SelectValue placeholder="Color Mode" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectItem value="wasm">
+                                            <Lucide.Package /> WASM
+                                        </SelectItem>
+                                        <SelectItem value="http">
+                                            <Lucide.Wifi /> HTTP (Remote)
+                                        </SelectItem>
+                                        <SelectItem value="http-local">
+                                            <Lucide.ArrowDownToDot /> HTTP
+                                            (Localhost)
+                                        </SelectItem>
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        </HStack>
+                    </RStack>
                 </Toolbar>
                 <RStack grow={1}>
                     <Panel grow={1}>
                         <EntityTree />
                     </Panel>
-                    <Panel grow={3}>
-                        <Engine />
-                    </Panel>
-                    <Panel grow={1}>
+                    <Engine active={target === "wasm"} />
+                    <Panel grow={2}>
                         <Inspector />
                     </Panel>
                 </RStack>

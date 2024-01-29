@@ -10,6 +10,10 @@ export interface GlobalStore {
 
     brpRequests: Immutable.Map<string, number>;
     incrementBrpRequest: (request: string) => void;
+    resetBrpRequests: () => void;
+
+    target: "wasm" | "http" | "http-local";
+    setTarget: (target: "wasm" | "http" | "http-local") => void;
 }
 
 export const useGlobalStore = create<GlobalStore>((set) => ({
@@ -51,5 +55,13 @@ export const useGlobalStore = create<GlobalStore>((set) => ({
                 brpRequests: state.brpRequests.set(request, count + 1),
             };
         });
+    },
+    resetBrpRequests: () => {
+        set({ brpRequests: Immutable.Map() });
+    },
+
+    target: "wasm",
+    setTarget: (target: "wasm" | "http" | "http-local") => {
+        set({ target });
     },
 }));

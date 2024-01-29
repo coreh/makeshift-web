@@ -292,6 +292,7 @@ input[type="number"] {
         height: var(--control-height);
         padding-left: calc(var(--control-indent) * 2);
         padding-right: var(--control-padding-x);
+        white-space: nowrap;
 
         &.state\:selected {
             background-color: color-mix(
@@ -392,7 +393,8 @@ svg.lucide {
     border-radius: var(--control-radius);
     display: flex;
     flex-direction: row;
-    height: calc(var(--control-height) * 2);
+    min-height: calc(var(--control-height) * 2);
+    padding: var(--control-padding-x);
     padding-left: var(--control-indent);
     padding-right: var(--control-indent);
     align-items: center;
@@ -1247,11 +1249,30 @@ a {
 }
 
 .Engine {
-    background: black;
+    background: var(--surface-minus-2);
     border-radius: var(--control-radius);
     overflow: hidden;
     display: flex;
-    flex-grow: 1;
+    flex-basis: 0;
+    flex-grow: 4;
+    transition:
+        filter 0.5s ease-in-out,
+        flex-grow 0.5s ease-in-out,
+        margin 0.5s ease-in-out;
+
+    @media (max-width: 768px) {
+        flex-grow: 2;
+    }
+
+    @media (max-width: 480px) {
+        flex-grow: 1;
+    }
+
+    &:not(.active) {
+        flex-grow: 0;
+        filter: saturate(0);
+        margin: calc(0rem - var(--control-gap) / 2);
+    }
 
     canvas {
         width: 100% !important;
@@ -1260,6 +1281,7 @@ a {
         display: block;
         touch-action: none;
         outline: none;
+        transition: 0.5s linear filter;
     }
 
     &:focus-within {

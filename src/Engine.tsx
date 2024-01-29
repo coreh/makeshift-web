@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import cls from "classnames";
 
 export let sendRequest: (request: any) => Promise<any> = async () => {
     throw new Error("sendRequest not initialized");
@@ -6,7 +7,12 @@ export let sendRequest: (request: any) => Promise<any> = async () => {
 
 let didInit = false;
 
-export function Engine() {
+export interface EngineProps {
+    active: boolean;
+}
+
+export function Engine(props: EngineProps) {
+    const { active } = props;
     const editorRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         if (didInit) {
@@ -36,5 +42,5 @@ export function Engine() {
         }, 50);
     }, []);
 
-    return <div ref={editorRef} className="Engine"></div>;
+    return <div ref={editorRef} className={cls("Engine", { active })}></div>;
 }
