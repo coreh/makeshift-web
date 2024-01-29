@@ -23,11 +23,19 @@ export function Trackball(props: TrackballProps) {
     );
 
     useEffect(() => {
-        window.addEventListener("pointerup", handlePointerUp);
-        window.addEventListener("pointermove", handlePointerMove);
+        window.addEventListener("pointerup", handlePointerUp, {
+            capture: true,
+        });
+        window.addEventListener("pointermove", handlePointerMove, {
+            capture: true,
+        });
         return () => {
-            window.removeEventListener("pointerup", handlePointerUp);
-            window.removeEventListener("pointermove", handlePointerMove);
+            window.removeEventListener("pointerup", handlePointerUp, {
+                capture: true,
+            });
+            window.removeEventListener("pointermove", handlePointerMove, {
+                capture: true,
+            });
         };
     }, [handlePointerUp, handlePointerMove]);
 
@@ -137,10 +145,12 @@ export function Trackball(props: TrackballProps) {
     }
 
     function handlePointerUp(e: PointerEvent) {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDraggingBall(false);
-        setIsDraggingRing(false);
+        if (isDraggingBall || isDraggingRing) {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsDraggingBall(false);
+            setIsDraggingRing(false);
+        }
     }
 
     function handlePointerMove(e: PointerEvent) {

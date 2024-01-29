@@ -35,11 +35,19 @@ export function ColorWheel(props: ColorWheelProps) {
     const hueY = -Math.cos((hue / 180) * Math.PI);
 
     useEffect(() => {
-        window.addEventListener("pointerup", handlePointerUp);
-        window.addEventListener("pointermove", handlePointerMove);
+        window.addEventListener("pointerup", handlePointerUp, {
+            capture: true,
+        });
+        window.addEventListener("pointermove", handlePointerMove, {
+            capture: true,
+        });
         return () => {
-            window.removeEventListener("pointerup", handlePointerUp);
-            window.removeEventListener("pointermove", handlePointerMove);
+            window.removeEventListener("pointerup", handlePointerUp, {
+                capture: true,
+            });
+            window.removeEventListener("pointermove", handlePointerMove, {
+                capture: true,
+            });
         };
     }, [handlePointerUp, handlePointerMove]);
 
@@ -110,10 +118,12 @@ export function ColorWheel(props: ColorWheelProps) {
     }
 
     function handlePointerUp(e: PointerEvent) {
-        e.preventDefault();
-        e.stopPropagation();
-        isDraggingWheelRef.current = false;
-        isDraggingBoxRef.current = false;
+        if (isDraggingWheelRef.current || isDraggingBoxRef.current) {
+            e.preventDefault();
+            e.stopPropagation();
+            isDraggingWheelRef.current = false;
+            isDraggingBoxRef.current = false;
+        }
     }
 
     function handlePointerMove(e: PointerEvent) {

@@ -126,11 +126,18 @@ export function NumberInput(props: NumberInputProps) {
     }, [value]);
 
     useEffect(() => {
-        window.addEventListener("pointerup", handlePointerUp);
-        window.addEventListener("pointermove", handlePointerMove);
+        window.addEventListener("pointerup", handlePointerUp, {
+            capture: true,
+        });
+        window.addEventListener("pointermove", handlePointerMove, {
+            capture: true,
+        });
         return () => {
-            window.removeEventListener("pointerup", handlePointerUp);
-            window.removeEventListener("pointermove", handlePointerMove);
+            window.removeEventListener("pointerup", handlePointerUp),
+                { capture: true };
+            window.removeEventListener("pointermove", handlePointerMove, {
+                capture: true,
+            });
         };
     }, [handlePointerUp, handlePointerMove]);
 
