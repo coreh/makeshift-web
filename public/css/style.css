@@ -1245,3 +1245,25 @@ a {
         }
     }
 }
+
+.Engine {
+    background: black;
+    border-radius: var(--control-radius);
+    overflow: hidden;
+    display: flex;
+    flex-grow: 1;
+
+    canvas {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain;
+        display: block;
+        touch-action: none;
+        outline: none;
+    }
+
+    &:focus-within {
+        outline: 2px solid color-mix(in srgb, var(--highlight) 80%, transparent);
+        outline-offset: 1px;
+    }
+}

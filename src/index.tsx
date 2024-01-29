@@ -11,8 +11,9 @@ import { HStack } from "./components/layout/HStack";
 import { Toolbar } from "./components/ui/Toolbar";
 import { RStack } from "./components/layout/RStack";
 import { useGlobalStore } from "./store";
+import { Engine, sendRequest } from "./Engine";
 
-export async function fetcher(obj: any) {
+export async function httpFetcher(obj: any) {
     useGlobalStore.getState().incrementBrpRequest(obj.request);
 
     const url = new URL(window.location.href);
@@ -30,6 +31,13 @@ export async function fetcher(obj: any) {
     }
     return await res.json();
 }
+
+let id = 0;
+export async function wasmFetcher(obj: any) {
+    return await sendRequest({ ...obj, id: id++ });
+}
+
+export const fetcher = wasmFetcher;
 
 function Ping() {
     const { isLoading, error } = useSWR(
@@ -70,7 +78,10 @@ function App() {
                     <Panel grow={1}>
                         <EntityTree />
                     </Panel>
-                    <Panel grow={2}>
+                    <Panel grow={3}>
+                        <Engine />
+                    </Panel>
+                    <Panel grow={1}>
                         <Inspector />
                     </Panel>
                 </RStack>
