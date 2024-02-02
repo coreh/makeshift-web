@@ -37,7 +37,11 @@ export function EntityTree() {
                 filter: { without: ["Parent"] },
             },
         },
-        { errorRetryInterval: 1000, keepPreviousData: false },
+        {
+            errorRetryInterval: 1000,
+            keepPreviousData: false,
+            refreshInterval: 1000,
+        },
     );
 
     const entities = data?.content?.entities;
@@ -100,7 +104,11 @@ function EntityTreeNode({ entity }: EntityTreeNodeProps) {
         hasBeenOpen.current || hasBeenHovered.current || hasBeenFocused.current
             ? query
             : null,
-        { errorRetryInterval: 1000, keepPreviousData: false },
+        {
+            errorRetryInterval: 1000,
+            keepPreviousData: false,
+            refreshInterval: isOpen ? 1000 : undefined,
+        },
     );
 
     const entities = data?.content?.entities;
