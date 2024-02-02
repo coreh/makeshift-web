@@ -1268,10 +1268,6 @@ a {
     display: flex;
     flex-basis: 0;
     flex-grow: 4;
-    transition:
-        filter 0.5s ease-in-out,
-        flex-grow 0.5s ease-in-out,
-        margin 0.5s ease-in-out;
 
     @media (max-width: 768px) {
         flex-grow: 2;
@@ -1282,9 +1278,7 @@ a {
     }
 
     &:not(.active) {
-        flex-grow: 0;
-        filter: saturate(0);
-        margin: calc(0rem - var(--control-gap) / 2);
+        display: none;
     }
 
     canvas {
