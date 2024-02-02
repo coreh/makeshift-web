@@ -54,7 +54,7 @@ export async function fetcher(obj: any) {
             `//${new URL(window.location.href).hostname}:8765/brp`,
         );
     } else if (target === "http-local") {
-        return await httpFetcher(obj, `http://localhost:8765/brp`);
+        return await httpFetcher(obj, `http://127.0.0.1:8765/brp`);
     } else if (target === "wasm") {
         return await wasmFetcher(obj);
     }
