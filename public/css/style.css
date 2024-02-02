@@ -188,6 +188,12 @@ input[type="number"] {
         font-weight: 500;
     }
 
+    &.muted:not(:hover) {
+        background-color: transparent;
+        color: var(--accent);
+        box-shadow: none;
+    }
+
     &:not(:disabled):hover {
         filter: brightness(1.1);
     }
@@ -426,11 +432,18 @@ svg.lucide {
         padding-left: var(--control-padding-x);
         padding-right: var(--control-padding-x);
         gap: var(--control-gap);
+        position: relative;
 
         .EntityIcon,
         .Chevron {
             will-change: transform; /* fix for some flickering with the filter */
             filter: drop-shadow(var(--shadow-low));
+        }
+
+        .Actions {
+            position: absolute;
+            right: 0;
+            top: 0;
         }
     }
 

@@ -34,7 +34,7 @@ import { HDRIntensitySwatches } from "./components/ui/HDRIntensitySwatches";
 export function Inspector() {
     const selection = useGlobalStore((store) => store.selection);
 
-    const { data, isLoading, error } = useSWR(
+    const { data, isLoading, error, mutate } = useSWR(
         selection.count() === 1
             ? {
                   request: "GET",
@@ -75,21 +75,28 @@ export function Inspector() {
                             key={name}
                             name={name}
                             component={component}
+                            onReset={handleReset}
                         />
                     );
                 })}
         </div>
     );
+
+    function handleReset() {
+        mutate();
+    }
 }
 
 interface ComponentInspectorProps {
     name: string;
     component: any;
+    onReset: () => void;
 }
 
 export function ComponentInspector({
     name,
     component,
+    onReset,
 }: ComponentInspectorProps) {
     const selection = useGlobalStore((store) => store.selection);
 
@@ -113,6 +120,17 @@ export function ComponentInspector({
                 </div>
                 <span title={name}>{prettyName}</span>
                 {label && <i style={{ color: "var(--accent)" }}>{label}</i>}
+                <div className="Actions">
+                    {ComponentEditor && (
+                        <Button
+                            muted
+                            onClick={() => handleReset(name, component)}
+                            title="Reset to Default"
+                        >
+                            <Lucide.Undo2 />
+                        </Button>
+                    )}
+                </div>
             </div>
             {ComponentEditor && (
                 <div className="Content">
@@ -137,6 +155,20 @@ export function ComponentInspector({
                 },
             },
         });
+    }
+
+    function handleReset(name: string, component: any) {
+        fetcher({
+            request: "INSERT",
+            params: {
+                entity: selection.first(),
+                components: {
+                    [name]: "<<Default>>",
+                },
+            },
+        });
+
+        onReset();
     }
 }
 

@@ -7,6 +7,7 @@ export interface ButtonProps
     extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     topic?: TopicName;
     primary?: boolean;
+    muted?: boolean;
     asChild?: boolean;
 }
 
@@ -14,6 +15,7 @@ export function Button({
     asChild,
     topic,
     primary,
+    muted,
     className,
     ...props
 }: ButtonProps) {
@@ -24,6 +26,7 @@ export function Button({
             className={cn(
                 "Button",
                 primary && "primary",
+                muted && "muted",
                 topic && `topic:${topic}`,
                 className,
             )}
