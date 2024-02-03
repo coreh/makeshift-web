@@ -12,10 +12,20 @@ export function deserialize(
         // TODO: throw error?
         return Unserializable;
     }
-    const inner = JSON5.parse(obj.JSON5);
-    return inner[Object.keys(inner)[0]];
+    try {
+        const inner = JSON5.parse(obj.JSON5);
+        return inner[Object.keys(inner)[0]];
+    } catch (e) {
+        // This is a massive hack to work around the rust JSON5 crate
+        // not properly handling numerical keys in maps.
+        const patchedJSON5 = obj.JSON5.replace(/(?<=[\,\{])(\d+):/g, '"$1":');
+        console.log(patchedJSON5);
+        return JSON5.parse(patchedJSON5);
+    }
 }
 
 export function serialize(obj: any): { JSON5: string } {
-    return { JSON5: JSON5.stringify(obj) };
+    return {
+        JSON5: JSON5.stringify(obj).replace(/"(?<=[\,\{])(\d+)":/g, "$1:"),
+    };
 }
