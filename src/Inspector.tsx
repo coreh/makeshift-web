@@ -290,6 +290,21 @@ function getComponentInfo(name: string, component: any) {
             Icon = Lucide.LampDesk;
             ComponentEditor = SpotLightComponentEditor;
             break;
+        case "bevy_asset::handle::Handle<bevy_pbr::pbr_material::StandardMaterial>":
+            topic = "asset";
+            Icon = Lucide.BrickWall;
+            ComponentEditor = AssetComponentEditor;
+            break;
+        case "bevy_asset::handle::Handle<bevy_render::mesh::mesh::Mesh>":
+            topic = "asset";
+            Icon = Lucide.Box;
+            // ComponentEditor = AssetComponentEditor;
+            break;
+        case "bevy_asset::handle::Handle<bevy_scene::scene::Scene>":
+            topic = "asset";
+            Icon = Lucide.Shapes;
+            ComponentEditor = AssetComponentEditor;
+            break;
         default:
             if (component === Unserializable) {
                 topic = "code";
@@ -1368,4 +1383,43 @@ function makeTopicComponentEditor(
 
 function prettifyName(name: string) {
     return name.replace(/([a-z][a-z0-9_]+::)/g, "").replace(/_/g, " ");
+}
+
+function AssetComponentEditor(props: ComponentEditorProps) {
+    const { name, component } = props;
+
+    const { data } = useSWR({
+        request: "GETASSET",
+        params: {
+            name,
+            handle: serialize(component),
+        },
+    });
+
+    const asset = data?.content?.asset ? deserialize(data.content.asset) : null;
+
+    return (
+        <div className="ComponentEditor">
+            <div>
+                <Lucide.Link />
+                {JSON5.stringify(component)}
+            </div>
+            <GenericComponentEditor
+                name={name}
+                component={asset}
+                onSave={handleSave}
+            />
+        </div>
+    );
+
+    function handleSave(name: string, newComponent: any) {
+        fetcher({
+            request: "UPDATEASSET",
+            params: {
+                name,
+                handle: serialize(component),
+                asset: serialize(newComponent),
+            },
+        });
+    }
 }
