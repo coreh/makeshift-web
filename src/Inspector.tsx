@@ -30,6 +30,7 @@ import { Topic, TopicName } from "./components/ui/common";
 import { ColorWheel } from "./components/ui/ColorWheel";
 import { Color } from "./utils/color";
 import { HDRIntensitySwatches } from "./components/ui/HDRIntensitySwatches";
+import * as JSON5 from "json5";
 
 export function Inspector() {
     const selection = useGlobalStore((store) => store.selection);
@@ -327,7 +328,7 @@ function getComponentInfo(name: string, component: any) {
 export function GenericComponentEditor(props: ComponentEditorProps) {
     const selection = useGlobalStore((store) => store.selection);
     const entity = selection.first();
-    const stringified = JSON.stringify(props.component, null, 4);
+    const stringified = JSON5.stringify(props.component, null, 4);
     const [text, setText] = useState("");
     useEffect(() => {
         setText(stringified);
@@ -347,7 +348,7 @@ export function GenericComponentEditor(props: ComponentEditorProps) {
                     <Button
                         primary
                         onClick={() =>
-                            props.onSave(props.name, JSON.parse(text))
+                            props.onSave(props.name, JSON5.parse(text))
                         }
                     >
                         <Lucide.Check />
