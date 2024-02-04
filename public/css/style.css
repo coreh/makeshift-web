@@ -476,6 +476,7 @@ svg.lucide {
         height: var(--control-height);
         align-items: center;
         padding-right: var(--control-padding-x);
+        text-transform: capitalize;
     }
 }
 
