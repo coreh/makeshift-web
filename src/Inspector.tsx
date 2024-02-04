@@ -1288,7 +1288,7 @@ function makeMultipleChoiceComponentEditor(
     }[],
 ): React.FC<ComponentEditorProps> {
     return function MultipleChoiceComponentEditor(props: ComponentEditorProps) {
-        const { name, component, onSave } = props;
+        const { name, component, isRoot, onSave } = props;
         const selection = useGlobalStore((store) => store.selection);
         const entity = selection.first();
 
@@ -1309,6 +1309,7 @@ function makeMultipleChoiceComponentEditor(
                         }}
                     >
                         <SelectTrigger>
+                            {!isRoot && <label>{prettifyName(name)}</label>}
                             <SelectValue placeholder={placeholder} />
                         </SelectTrigger>
                         <SelectContent>
@@ -1328,7 +1329,6 @@ function makeMultipleChoiceComponentEditor(
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-                    <HStack></HStack>
                 </VStack>
             </div>
         );
@@ -1453,10 +1453,10 @@ const StandardMaterialEditor = makeCompoundComponentEditor({
     // diffuse_transmission_texture: AssetComponentEditor,
     specular_transmission: NormNumberComponentEditor,
     // specular_transmission_texture: AssetComponentEditor,
-    thickness: NormNumberComponentEditor,
+    thickness: LengthComponentEditor,
     // thickness_texture: AssetComponentEditor,
     ior: IorComponentEditor,
-    attenuation_distance: NumberComponentEditor,
+    attenuation_distance: LengthComponentEditor,
     attenuation_color: ColorComponentEditor,
     // normal_map_texture: AssetComponentEditor,
     flip_normal_y: BooleanComponentEditor,

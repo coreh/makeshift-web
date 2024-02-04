@@ -784,6 +784,7 @@ svg.lucide {
         color: var(--accent);
         min-width: fit-content;
         max-width: 50%;
+        text-transform: capitalize;
     }
 }
 
