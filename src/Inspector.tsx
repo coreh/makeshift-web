@@ -912,6 +912,11 @@ const RadiansComponentEditor = makeNumberComponentEditor({
     max: Math.PI * 2,
     unit: "rad",
 });
+const IorComponentEditor = makeNumberComponentEditor({
+    step: 0.01,
+    min: 1,
+    max: 5,
+});
 
 function ColorComponentEditor(props: ComponentEditorProps) {
     const { name, component, onSave } = props;
@@ -1450,7 +1455,7 @@ const StandardMaterialEditor = makeCompoundComponentEditor({
     // specular_transmission_texture: AssetComponentEditor,
     thickness: NormNumberComponentEditor,
     // thickness_texture: AssetComponentEditor,
-    ior: NormNumberComponentEditor,
+    ior: IorComponentEditor,
     attenuation_distance: NumberComponentEditor,
     attenuation_color: ColorComponentEditor,
     // normal_map_texture: AssetComponentEditor,
