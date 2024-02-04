@@ -31,6 +31,12 @@ import { ColorWheel } from "./components/ui/ColorWheel";
 import { Color } from "./utils/color";
 import { HDRIntensitySwatches } from "./components/ui/HDRIntensitySwatches";
 import * as JSON5 from "json5";
+import {
+    CollapsibleTrigger,
+    CollapsibleContent,
+    CollapsibleHeading,
+    Collapsible,
+} from "./components/ui/Collapsible";
 
 export function Inspector() {
     const selection = useGlobalStore((store) => store.selection);
@@ -920,11 +926,13 @@ const IorComponentEditor = makeNumberComponentEditor({
 
 function ColorComponentEditor(props: ComponentEditorProps) {
     const { name, component, onSave } = props;
+    const [isOpen, setIsOpen] = useState(false);
     const selection = useGlobalStore((store) => store.selection);
     const entity = selection.first();
     const [value, setValue] = useState<Color>(props.component);
     const [intensity, setIntensity] = useState<number>(0);
     const hasCalculatedIntensity = useRef(false);
+    const rgbaLinearValue = Color.toRgbaLinear(value);
 
     useEffect(() => {
         hasCalculatedIntensity.current = false;
@@ -988,152 +996,186 @@ function ColorComponentEditor(props: ComponentEditorProps) {
 
     return (
         <div className="ComponentEditor">
-            <label>{prettifyName(name)}</label>
-            <Select value={colorSpace} onValueChange={handleColorSpaceChange}>
-                <SelectTrigger>
-                    <label>Color Space</label>
-                    <SelectValue placeholder="Color Mode" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectGroup>
-                        <SelectItem value="Rgba">Rgba</SelectItem>
-                        <SelectItem value="RgbaLinear">RgbaLinear</SelectItem>
-                        <SelectItem value="Hsla">Hsla</SelectItem>
-                        <SelectItem value="Lcha">Lcha</SelectItem>
-                    </SelectGroup>
-                </SelectContent>
-            </Select>
-            <ColorWheel
-                value={value}
-                linearColorspace={colorSpace === "RgbaLinear"}
-                onChange={handleWheelChange}
-            />
-            {colorSpace === "Rgba" && (
-                <HStack>
-                    <VStack grow={1}>
-                        <Topic topic="x">
-                            <NormNumberComponentEditor
-                                name="red"
-                                component={red}
-                                onSave={handleChannelSave}
-                            />
-                        </Topic>
-                        <Topic topic="y">
-                            <NormNumberComponentEditor
-                                name="green"
-                                component={green}
-                                onSave={handleChannelSave}
-                            />
-                        </Topic>
-                    </VStack>
-                    <VStack grow={1}>
-                        <Topic topic="z">
-                            <NormNumberComponentEditor
-                                name="blue"
-                                component={blue}
-                                onSave={handleChannelSave}
-                            />
-                        </Topic>
-                        <NormNumberComponentEditor
-                            name="alpha"
-                            component={alpha}
-                            onSave={handleChannelSave}
-                        />
-                    </VStack>
-                </HStack>
-            )}
-            {colorSpace === "RgbaLinear" && (
-                <HStack>
-                    <VStack grow={1}>
-                        <Topic topic="x">
-                            <PositiveNumberComponentEditor
-                                name="red"
-                                component={red}
-                                onSave={handleChannelSave}
-                            />
-                        </Topic>
-                        <Topic topic="y">
-                            <PositiveNumberComponentEditor
-                                name="green"
-                                component={green}
-                                onSave={handleChannelSave}
-                            />
-                        </Topic>
-                    </VStack>
-                    <VStack grow={1}>
-                        <Topic topic="z">
-                            <PositiveNumberComponentEditor
-                                name="blue"
-                                component={blue}
-                                onSave={handleChannelSave}
-                            />
-                        </Topic>
-                        <NormNumberComponentEditor
-                            name="alpha"
-                            component={alpha}
-                            onSave={handleChannelSave}
-                        />
-                    </VStack>
-                </HStack>
-            )}
-            {(colorSpace === "Hsla" || colorSpace === "Lcha") && (
-                <HStack>
-                    <VStack grow={1}>
-                        <DegreesComponentEditor
-                            name="hue"
-                            component={hue}
-                            onSave={handleChannelSave}
-                        />
-                        {colorSpace === "Lcha" && (
-                            <NormNumberComponentEditor
-                                name="chroma"
-                                component={chroma}
-                                onSave={handleChannelSave}
-                            />
-                        )}
-                        {colorSpace === "Hsla" && (
-                            <NormNumberComponentEditor
-                                name="saturation"
-                                component={saturation}
-                                onSave={handleChannelSave}
-                            />
-                        )}
-                    </VStack>
-                    <VStack grow={1}>
-                        <NormNumberComponentEditor
-                            name="lightness"
-                            component={lightness}
-                            onSave={handleChannelSave}
-                        />
-                        <NormNumberComponentEditor
-                            name="alpha"
-                            component={alpha}
-                            onSave={handleChannelSave}
-                        />
-                    </VStack>
-                </HStack>
-            )}
-            {colorSpace === "RgbaLinear" && (
-                <VStack>
-                    <HStack>
-                        <HDRIntensityComponentEditor
-                            name="HDR Log₂ Intensity"
-                            component={intensity}
-                            onSave={handleIntensitySave}
-                        />
-                        <Button
-                            disabled={red == 1 || green == 1 || blue == 1}
-                            onClick={handleIntensityRecalculate}
-                        >
-                            <Lucide.Aperture />
-                        </Button>
-                    </HStack>
-                    <HDRIntensitySwatches
-                        value={component}
-                        onChange={handleIntensitySwatchChange}
+            <Collapsible
+                className="NestedEditor"
+                open={isOpen}
+                onOpenChange={setIsOpen}
+            >
+                <CollapsibleTrigger
+                    className="Trigger"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                    }}
+                >
+                    {isOpen ? (
+                        <Lucide.ChevronDown className="Chevron" />
+                    ) : (
+                        <Lucide.ChevronRight className="Chevron" />
+                    )}
+                    <label>{prettifyName(name)}</label>
+                    <div
+                        className="ColorWell"
+                        style={{
+                            // @ts-ignore
+                            "--well-color": `color(srgb-linear ${rgbaLinearValue.RgbaLinear.red} ${rgbaLinearValue.RgbaLinear.green} ${rgbaLinearValue.RgbaLinear.blue} / ${rgbaLinearValue.RgbaLinear.alpha})`,
+                        }}
                     />
-                </VStack>
-            )}
+                </CollapsibleTrigger>
+                <CollapsibleContent className="Content">
+                    <Select
+                        value={colorSpace}
+                        onValueChange={handleColorSpaceChange}
+                    >
+                        <SelectTrigger>
+                            <label>Color Space</label>
+                            <SelectValue placeholder="Color Mode" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value="Rgba">Rgba</SelectItem>
+                                <SelectItem value="RgbaLinear">
+                                    RgbaLinear
+                                </SelectItem>
+                                <SelectItem value="Hsla">Hsla</SelectItem>
+                                <SelectItem value="Lcha">Lcha</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                    <ColorWheel
+                        value={value}
+                        linearColorspace={colorSpace === "RgbaLinear"}
+                        onChange={handleWheelChange}
+                    />
+                    {colorSpace === "Rgba" && (
+                        <HStack>
+                            <VStack grow={1}>
+                                <Topic topic="x">
+                                    <NormNumberComponentEditor
+                                        name="red"
+                                        component={red}
+                                        onSave={handleChannelSave}
+                                    />
+                                </Topic>
+                                <Topic topic="y">
+                                    <NormNumberComponentEditor
+                                        name="green"
+                                        component={green}
+                                        onSave={handleChannelSave}
+                                    />
+                                </Topic>
+                            </VStack>
+                            <VStack grow={1}>
+                                <Topic topic="z">
+                                    <NormNumberComponentEditor
+                                        name="blue"
+                                        component={blue}
+                                        onSave={handleChannelSave}
+                                    />
+                                </Topic>
+                                <NormNumberComponentEditor
+                                    name="alpha"
+                                    component={alpha}
+                                    onSave={handleChannelSave}
+                                />
+                            </VStack>
+                        </HStack>
+                    )}
+                    {colorSpace === "RgbaLinear" && (
+                        <HStack>
+                            <VStack grow={1}>
+                                <Topic topic="x">
+                                    <PositiveNumberComponentEditor
+                                        name="red"
+                                        component={red}
+                                        onSave={handleChannelSave}
+                                    />
+                                </Topic>
+                                <Topic topic="y">
+                                    <PositiveNumberComponentEditor
+                                        name="green"
+                                        component={green}
+                                        onSave={handleChannelSave}
+                                    />
+                                </Topic>
+                            </VStack>
+                            <VStack grow={1}>
+                                <Topic topic="z">
+                                    <PositiveNumberComponentEditor
+                                        name="blue"
+                                        component={blue}
+                                        onSave={handleChannelSave}
+                                    />
+                                </Topic>
+                                <NormNumberComponentEditor
+                                    name="alpha"
+                                    component={alpha}
+                                    onSave={handleChannelSave}
+                                />
+                            </VStack>
+                        </HStack>
+                    )}
+                    {(colorSpace === "Hsla" || colorSpace === "Lcha") && (
+                        <HStack>
+                            <VStack grow={1}>
+                                <DegreesComponentEditor
+                                    name="hue"
+                                    component={hue}
+                                    onSave={handleChannelSave}
+                                />
+                                {colorSpace === "Lcha" && (
+                                    <NormNumberComponentEditor
+                                        name="chroma"
+                                        component={chroma}
+                                        onSave={handleChannelSave}
+                                    />
+                                )}
+                                {colorSpace === "Hsla" && (
+                                    <NormNumberComponentEditor
+                                        name="saturation"
+                                        component={saturation}
+                                        onSave={handleChannelSave}
+                                    />
+                                )}
+                            </VStack>
+                            <VStack grow={1}>
+                                <NormNumberComponentEditor
+                                    name="lightness"
+                                    component={lightness}
+                                    onSave={handleChannelSave}
+                                />
+                                <NormNumberComponentEditor
+                                    name="alpha"
+                                    component={alpha}
+                                    onSave={handleChannelSave}
+                                />
+                            </VStack>
+                        </HStack>
+                    )}
+                    {colorSpace === "RgbaLinear" && (
+                        <VStack>
+                            <HStack>
+                                <HDRIntensityComponentEditor
+                                    name="HDR Log₂ Intensity"
+                                    component={intensity}
+                                    onSave={handleIntensitySave}
+                                />
+                                <Button
+                                    disabled={
+                                        red == 1 || green == 1 || blue == 1
+                                    }
+                                    onClick={handleIntensityRecalculate}
+                                >
+                                    <Lucide.Aperture />
+                                </Button>
+                            </HStack>
+                            <HDRIntensitySwatches
+                                value={component}
+                                onChange={handleIntensitySwatchChange}
+                            />
+                        </VStack>
+                    )}
+                </CollapsibleContent>
+            </Collapsible>
         </div>
     );
 
@@ -1412,10 +1454,10 @@ function AssetComponentEditor(props: ComponentEditorProps) {
 
     return (
         <div className="ComponentEditor">
-            <div>
+            {/* <div>
                 <Lucide.Link />
                 {JSON5.stringify(component)}
-            </div>
+            </div> */}
             {asset &&
                 name ===
                     "bevy_asset::handle::Handle<bevy_pbr::pbr_material::StandardMaterial>" && (
