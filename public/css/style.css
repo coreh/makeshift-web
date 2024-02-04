@@ -548,6 +548,7 @@ svg.lucide {
         bottom: 0;
         left: 0;
         touch-action: pan-y;
+        z-index: 2;
     }
 
     input:focus + .Slider {
