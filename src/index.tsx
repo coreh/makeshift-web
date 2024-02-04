@@ -35,7 +35,7 @@ export async function httpFetcher(obj: any, url: string) {
 
     if (!res.ok) {
         const json = await res.json();
-        throw new Error(json.content ?? "Unknown error");
+        throw new Error(JSON.stringify(json.content) ?? "Unknown error");
     }
     return await res.json();
 }
@@ -48,15 +48,20 @@ export async function wasmFetcher(obj: any) {
 
 export async function fetcher(obj: any) {
     const target = useGlobalStore.getState().target;
-    if (target === "http") {
-        return await httpFetcher(
-            obj,
-            `//${new URL(window.location.href).hostname}:8765/brp`,
-        );
-    } else if (target === "http-local") {
-        return await httpFetcher(obj, `http://127.0.0.1:8765/brp`);
-    } else if (target === "wasm") {
-        return await wasmFetcher(obj);
+    try {
+        if (target === "http") {
+            return await httpFetcher(
+                obj,
+                `//${new URL(window.location.href).hostname}:8765/brp`,
+            );
+        } else if (target === "http-local") {
+            return await httpFetcher(obj, `http://127.0.0.1:8765/brp`);
+        } else if (target === "wasm") {
+            return await wasmFetcher(obj);
+        }
+    } catch (e) {
+        console.error(e);
+        throw e;
     }
 }
 
