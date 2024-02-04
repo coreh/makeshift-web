@@ -1,47 +1,31 @@
 import React from "react";
 import cn from "classnames";
-import * as Collapsible from "@radix-ui/react-collapsible";
+import * as CollapsiblePrimitive from "@radix-ui/react-collapsible";
 import { ChevronDown } from "lucide-react";
 
-export function TreeNode({
-    className,
+export function Collapsible({
     ...props
-}: Collapsible.CollapsibleProps) {
-    return <Collapsible.Root {...props} className={cn("TreeNode")} />;
+}: CollapsiblePrimitive.CollapsibleProps) {
+    return <CollapsiblePrimitive.Root {...props} />;
 }
 
-export function TreeContent({
-    className,
+export function CollapsibleContent({
     ...props
-}: Collapsible.CollapsibleContentProps) {
-    return <Collapsible.Content {...props} className={cn("Content")} />;
+}: CollapsiblePrimitive.CollapsibleContentProps) {
+    return <CollapsiblePrimitive.Content {...props} />;
 }
 
-export function TreeChevron({
-    className,
+export function CollapsibleTrigger({
     ...props
-}: Collapsible.CollapsibleTriggerProps) {
-    return <Collapsible.Trigger {...props} className={cn("Chevron")} />;
+}: CollapsiblePrimitive.CollapsibleTriggerProps) {
+    return <CollapsiblePrimitive.Trigger {...props} />;
 }
 
 interface TreeHeadingProps extends React.HTMLAttributes<HTMLDivElement> {
-    isSelected?: boolean;
     className?: string;
     children: React.ReactNode;
 }
 
-export function TreeHeading({
-    isSelected,
-    className,
-    children,
-    ...props
-}: TreeHeadingProps) {
-    return (
-        <div
-            className={cn("Heading", isSelected && "state:selected", className)}
-            {...props}
-        >
-            {children}
-        </div>
-    );
+export function CollapsibleHeading({ children, ...props }: TreeHeadingProps) {
+    return <div {...props}>{children}</div>;
 }

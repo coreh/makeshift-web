@@ -2,10 +2,10 @@ import React, { useRef, useState } from "react";
 import useSWR from "swr";
 import cn from "classnames";
 import {
-    TreeNode,
-    TreeChevron,
-    TreeContent,
-    TreeHeading,
+    Collapsible,
+    CollapsibleTrigger,
+    CollapsibleContent,
+    CollapsibleHeading,
 } from "./components/ui/Collapsible";
 import * as Lucide from "lucide-react";
 import { TopicName } from "./components/ui/common";
@@ -114,9 +114,16 @@ function EntityTreeNode({ entity }: EntityTreeNodeProps) {
     const entities = data?.content?.entities;
 
     return (
-        <TreeNode open={isOpen} onOpenChange={setIsOpen}>
-            <TreeHeading
-                isSelected={selection.has(entity.entity)}
+        <Collapsible
+            className="TreeNode"
+            open={isOpen}
+            onOpenChange={setIsOpen}
+        >
+            <CollapsibleHeading
+                className={cn(
+                    "Heading",
+                    selection.has(entity.entity) && "state:selected",
+                )}
                 onClick={(e) => {
                     useGlobalStore.getState().replaceSelection(entity.entity);
                 }}
@@ -126,7 +133,8 @@ function EntityTreeNode({ entity }: EntityTreeNodeProps) {
                 onBlur={() => setIsFocused(false)}
             >
                 {entity.has.Children && (
-                    <TreeChevron
+                    <CollapsibleTrigger
+                        className="Chevron"
                         onClick={(e) => {
                             e.stopPropagation();
                         }}
@@ -136,7 +144,7 @@ function EntityTreeNode({ entity }: EntityTreeNodeProps) {
                         ) : (
                             <Lucide.ChevronRight />
                         )}
-                    </TreeChevron>
+                    </CollapsibleTrigger>
                 )}
                 <EntityIcon has={entity.has} />
                 <EntityLabel
@@ -144,19 +152,23 @@ function EntityTreeNode({ entity }: EntityTreeNodeProps) {
                     name={name}
                     entity={entity.entity}
                 />
-            </TreeHeading>
-            <TreeContent>
+            </CollapsibleHeading>
+            <CollapsibleContent className="Content">
                 {isLoading && (
-                    <TreeNode open={isOpen} onOpenChange={setIsOpen}>
-                        <TreeHeading>
+                    <Collapsible
+                        className="TreeNode"
+                        open={isOpen}
+                        onOpenChange={setIsOpen}
+                    >
+                        <CollapsibleHeading className="Heading">
                             <Lucide.Loader
                                 style={{
                                     animation: "spin 3000ms linear infinite",
                                 }}
                             />
                             Loading…
-                        </TreeHeading>
-                    </TreeNode>
+                        </CollapsibleHeading>
+                    </Collapsible>
                 )}
                 {!data && error && (
                     <Lucide.PlugZap
@@ -173,8 +185,8 @@ function EntityTreeNode({ entity }: EntityTreeNodeProps) {
                             />
                         );
                     })}
-            </TreeContent>
-        </TreeNode>
+            </CollapsibleContent>
+        </Collapsible>
     );
 }
 
