@@ -886,6 +886,11 @@ const LengthComponentEditor = makeNumberComponentEditor({
 const IntComponentEditor = makeNumberComponentEditor({
     precision: 1,
 });
+const Int8ComponentEditor = makeNumberComponentEditor({
+    precision: 1,
+    min: 0,
+    max: 255,
+});
 const NormNumberComponentEditor = makeNumberComponentEditor({
     step: 0.01,
     min: 0,
@@ -978,6 +983,7 @@ function ColorComponentEditor(props: ComponentEditorProps) {
 
     return (
         <div className="ComponentEditor">
+            <label>{prettifyName(name)}</label>
             <Select value={colorSpace} onValueChange={handleColorSpaceChange}>
                 <SelectTrigger>
                     <label>Color Space</label>
@@ -1405,11 +1411,15 @@ function AssetComponentEditor(props: ComponentEditorProps) {
                 <Lucide.Link />
                 {JSON5.stringify(component)}
             </div>
-            <GenericComponentEditor
-                name={name}
-                component={asset}
-                onSave={handleSave}
-            />
+            {asset &&
+                name ===
+                    "bevy_asset::handle::Handle<bevy_pbr::pbr_material::StandardMaterial>" && (
+                    <StandardMaterialEditor
+                        name={name}
+                        component={asset}
+                        onSave={handleSave}
+                    />
+                )}
         </div>
     );
 
@@ -1424,3 +1434,57 @@ function AssetComponentEditor(props: ComponentEditorProps) {
         });
     }
 }
+
+const StandardMaterialEditor = makeCompoundComponentEditor({
+    base_color: ColorComponentEditor,
+    // base_color_texture: AssetComponentEditor,
+    emissive: ColorComponentEditor,
+    // emissive_texture: AssetComponentEditor,
+    perceptual_roughness: NormNumberComponentEditor,
+    metallic: NormNumberComponentEditor,
+    // metallic_roughness_texture: AssetComponentEditor,
+    reflectance: NormNumberComponentEditor,
+    diffuse_transmission: NormNumberComponentEditor,
+    // diffuse_transmission_texture: AssetComponentEditor,
+    specular_transmission: NormNumberComponentEditor,
+    // specular_transmission_texture: AssetComponentEditor,
+    thickness: NormNumberComponentEditor,
+    // thickness_texture: AssetComponentEditor,
+    ior: NormNumberComponentEditor,
+    attenuation_distance: NumberComponentEditor,
+    attenuation_color: ColorComponentEditor,
+    // normal_map_texture: AssetComponentEditor,
+    flip_normal_y: BooleanComponentEditor,
+    // occlusion_texture: AssetComponentEditor,
+    double_sided: BooleanComponentEditor,
+    // cull_mode: makeMultipleChoiceComponentEditor("Cull Mode", [
+    //     { value: "Front" },
+    //     { value: "Back" },
+    // ]),
+    unlit: BooleanComponentEditor,
+    fog_enabled: BooleanComponentEditor,
+    alpha_mode: makeMultipleChoiceComponentEditor("Alpha Mode", [
+        { value: "Opaque" },
+        // { value: "Mask" },
+        { value: "Blend" },
+        { value: "Premultiplied" },
+        { value: "Add" },
+        { value: "Multiply" },
+    ]),
+    depth_bias: NumberComponentEditor,
+    // depth_map: AssetComponentEditor,
+    parallax_depth_scale: NumberComponentEditor,
+    parallax_mapping_method: makeMultipleChoiceComponentEditor(
+        "Parallax Mapping Method",
+        [
+            { value: "Occlusion" },
+            // { value: "Relief" }
+        ],
+    ),
+    max_parallax_layer_count: IntComponentEditor,
+    opaque_render_method: makeMultipleChoiceComponentEditor(
+        "Opaque Render Method",
+        [{ value: "Forward" }, { value: "Deferred" }, { value: "Auto" }],
+    ),
+    deferred_lighting_pass_id: Int8ComponentEditor,
+});
