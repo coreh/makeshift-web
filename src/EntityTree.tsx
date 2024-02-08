@@ -28,7 +28,7 @@ const HAS = [
 export function EntityTree() {
     const { data, isLoading, error } = useSWR(
         {
-            request: "QUERY",
+            request: "QueryEntities",
             params: {
                 data: {
                     optional: ["Name"],
@@ -84,7 +84,7 @@ function EntityTreeNode({ entity }: EntityTreeNodeProps) {
     }
 
     const query = {
-        request: "QUERY",
+        request: "QueryEntities",
         params: {
             data: {
                 optional: ["Name"],

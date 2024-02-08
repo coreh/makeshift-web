@@ -44,7 +44,7 @@ export function Inspector() {
     const { data, isLoading, error, mutate } = useSWR(
         selection.count() === 1
             ? {
-                  request: "GET",
+                  request: "GetEntity",
                   params: {
                       entity: selection.first(),
                       data: {
@@ -154,7 +154,7 @@ export function ComponentInspector({
 
     function handleSave(name: string, component: any) {
         fetcher({
-            request: "INSERT",
+            request: "InsertComponent",
             params: {
                 entity: selection.first(),
                 components: {
@@ -166,7 +166,7 @@ export function ComponentInspector({
 
     function handleReset(name: string, component: any) {
         fetcher({
-            request: "INSERT",
+            request: "InsertComponent",
             params: {
                 entity: selection.first(),
                 components: {
@@ -1443,7 +1443,7 @@ function AssetComponentEditor(props: ComponentEditorProps) {
     const { name, component } = props;
 
     const { data } = useSWR({
-        request: "GETASSET",
+        request: "GetAsset",
         params: {
             name,
             handle: serialize(component),
@@ -1472,7 +1472,7 @@ function AssetComponentEditor(props: ComponentEditorProps) {
 
     function handleSave(name: string, newComponent: any) {
         fetcher({
-            request: "UPDATEASSET",
+            request: "InsertAsset",
             params: {
                 name,
                 handle: serialize(component),

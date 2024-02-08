@@ -67,7 +67,7 @@ export async function fetcher(obj: any) {
 
 function Ping() {
     const { isLoading, error } = useSWR(
-        { request: "PING" },
+        { request: "Ping" },
         { refreshInterval: 1000, errorRetryInterval: 1000 },
     );
 
